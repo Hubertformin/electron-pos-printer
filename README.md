@@ -17,6 +17,7 @@ const options = {
    preview: false,               // Preview in window or print
    width: '170px',               //  width of content body
    margin: '0 0 0 0',            // margin of content body
+   copies: 1,                    // Number of copies to print
    printerName: 'XP-80C',        // printerName: string, check it at webContent.getPrinters()
    timeOutPerLine: 400
 }
@@ -67,10 +68,10 @@ $ npm install @types/electron-thermal-print
 import {PosPrinter, PosPrintData, PosPrintOptions} from "electron-thermal-print";
 
 const options: PosPrintOptions = {
-   copies: 1,
    preview: false,
    width: '170px',       
    margin: '0 0 0 0',    
+   copies: 1,
    printerName: 'XP-80C',
    timeOutPerLine: 400
 }
