@@ -1,12 +1,15 @@
 {
-  "name": "electron-thermal-print",
-  "version": "1.0.1",
+  "name": "electron-pos-printer",
+  "version": "1.0.0",
   "description": "Electron thermal printer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "electron ./demo/",
-    "build": "tsc"
+    "test": "mocha",
+    "start": "electron ./demo/",
+    "build": "tsc",
+    "test:all": "mocha -R mocha-jenkins-reporter --timeout 20000 \"./src/test/**/*test-*.js\"",
+    "test:one": "mocha --watch -u bdd \"./src/test/**/test-*.js\" --grep \"test-login-form\""
   },
   "repository": {
     "type": "git",
@@ -25,7 +28,10 @@
   "homepage": "https://github.com/Hubertformin/electron-pos-printer#readme",
   "dependencies": {},
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "electron": "^7.0.0",
+    "spectron": "^9.0.0",
     "typescript": "^3.6.4"
   }
 }

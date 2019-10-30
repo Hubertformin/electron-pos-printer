@@ -1,17 +1,17 @@
-# Electron-thermal-print
-Electron printer plugin, currently supports 58mm, 
+# Electron-pos-printer
+An electron printer plugin, currently supports 58mm, 
 requires electron >= 4.x.x.  Inspired by 
 [electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)
 
 ### Installation
 ```bash
-$ npm install electron-thermal-print
+$ npm install electron-pos-printer
 ```
 
 ### Usage
 works in main and render processes
 ```js
-const {PosPrinter} = require("electron-thermal-print");
+const {PosPrinter} = require("electron-pos-printer");
 
 const options = {
    preview: false,               // Preview in window or print
@@ -42,7 +42,7 @@ const data = [
       fontsize: 8,
    },{
      type: 'qrCode',
-      value: 'https://github.com/Hubertformin/electron-thermal-print',
+      value: 'https://github.com/Hubertformin/electron-pos-printer',
       height: 55,
       width: 55,
       style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
@@ -61,7 +61,7 @@ PosPrinter.print(data, options)
 ### Usage
 
 ```typescript
-import {PosPrinter, PosPrintData, PosPrintOptions} from "electron-thermal-print";
+import {PosPrinter, PosPrintData, PosPrintOptions} from "electron-pos-printer";
 
 const options: PosPrintOptions = {
    preview: false,
@@ -87,7 +87,7 @@ const data: PosPrintData = [
       fontsize: 8,
     },{
      type: 'qrCode',
-      value: 'https://github.com/Hubertformin/electron-thermal-print',
+      value: 'https://github.com/Hubertformin/electron-pos-printer',
       height: 55,
       width: 55,
       style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
@@ -116,7 +116,7 @@ Each object in `PosPrintData` array accounts for a row.
 
 |           |                |
 |-----------|:--------------|
-| type      | (string) 'text', 'qrCode', 'barCode' |
+| type      | (string) 'text', 'qrCode', 'barCode' // type 'text' can contain html |
 | value | (string) value of the current row |
 | height | (number) applicable to only bar and QR codes|
 | width | (number)  applicable to only bar and QR codes|
