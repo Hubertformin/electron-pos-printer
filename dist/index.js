@@ -104,8 +104,12 @@ var PosPrinter = /** @class */ (function () {
                         mainWindow.webContents.print({
                             silent: true,
                             printBackground: true,
-                            deviceName: options.printerName
-                        }, function (arg) {
+                            deviceName: options.printerName,
+                            copies: options.copies ? options.copies : 1
+                        }, function (arg, err) {
+                            if (err) {
+                                reject(err);
+                            }
                             if (!resultSent) {
                                 resolve(arg);
                                 resultSent = true;
@@ -116,7 +120,7 @@ var PosPrinter = /** @class */ (function () {
                     else {
                         resolve(options);
                     }
-                });
+                }).catch(function (err) { return resolve(err); });
             });
         });
     };

@@ -1,20 +1,22 @@
 export interface PosPrintOptions {
     /**
+     * @field copies: number of copies to print
      * @field preview: bool，false=print，true=pop preview window
      * @field deviceName: string，default device name, check it at webContent.getPrinters()
      * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
      */
+    copies?: number;
     preview?: boolean;
-    width?: string;
-    margin?: string;
     printerName: string;
+    margin?: string;
     timeOutPerLine?: number;
+    width?: string;
 }
 /**
  * @interface
- * @name PosPrinterJobData
+ * @name PosPrintData
  * **/
-export interface PosPrintJob {
+export interface PosPrintData {
     type: PosPrinterDataType;
     value: string;
     css?: any;
@@ -26,7 +28,7 @@ export interface PosPrintJob {
 }
 /**
  * @type
- * @name PosPrintJob
+ * @name PosPrinterDataType
  * **/
 declare type PosPrinterDataType = 'text' | 'barCode' | 'qrCode';
 /**
@@ -38,6 +40,6 @@ export declare class PosPrinter {
      * @Param arg {any}
      * @Return {Promise}
      */
-    static print(data: PosPrintJob[], options: PosPrintOptions): Promise<any>;
+    static print(data: PosPrintData[], options: PosPrintOptions): Promise<any>;
 }
 export {};
