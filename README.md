@@ -105,14 +105,14 @@ PosPrinter.print(data, options)
 | Options        |           |
 | ------------- |:-------------|
 | copies     | (number) The number of copies to print |
-| Preview      | (boolean) preview in window, default is false |
-| width      | (string) specify margin of content body       |
-| margin | (string)  specify margin of page content body, CSS values can be used   | 
-| PrinterName | (string) PrinterName      | 
+| Preview      | (boolean) Preview in a window, default is false |
+| width      | (string) Specify margin of content body       |
+| margin | (string)  Specify margin of page content body, CSS values can be used   | 
+| PrinterName | (string) Specify the printer name      | 
 | timeOutPerLine | (number) Specify the timeout per line, default is 200      | 
 
 ## Print data object
-Each object in `PosPrintData` array account for a row.
+Each object in `PosPrintData` array accounts for a row.
 
 |           |                |
 |-----------|:--------------|
