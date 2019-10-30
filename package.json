@@ -1,8 +1,9 @@
 {
-  "name": "electron-pos-printer",
+  "name": "electron-thermal-print",
   "version": "1.0.0",
   "description": "Electron thermal printer",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "electron ./demo/",
     "build": "tsc"
@@ -16,7 +17,7 @@
     "printer",
     "thermal"
   ],
-  "author": "Hubertformin",
+  "author": "Hubertformin <hformin@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Hubertformin/electron-pos-printer/issues"
