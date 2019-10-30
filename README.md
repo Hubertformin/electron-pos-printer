@@ -38,14 +38,14 @@ const data = [
       value: 'HB4587896',
       height: 12,                     // height of barcode, applicable only to bar and QR codes
       width: 1,                       // width of barcode, applicable only to bar and QR codes
-      displayValue: true,             // Display barcode value below barcode
+      displayValue: true,             // Display value below barcode
       fontsize: 8,
    },{
      type: 'qrCode',
       value: 'https://github.com/Hubertformin/electron-thermal-print',
       height: 55,
       width: 55,
-      style: `text-align:center;width:55px;margin: 10 20px 20 20px`
+      style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
     }
 ]
 
@@ -94,7 +94,7 @@ const data: PosPrintData = [
       value: 'https://github.com/Hubertformin/electron-thermal-print',
       height: 55,
       width: 55,
-      style: `text-align:center;width:55px;margin: 10 20px 20 20px`
+      style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
     }
 ]
 
@@ -110,7 +110,7 @@ PosPrinter.print(data, options)
 | ------------- |:-------------|
 | copies     | (number) The number of copies to print |
 | Preview      | (boolean) preview in window, default is false |
-| Width      | (string) specify margin of content body       |
+| width      | (string) specify margin of content body       |
 | margin | (string)  specify margin of page content body, CSS values can be used   | 
 | PrinterName | (string) PrinterName      | 
 | timeOutPerLine | (number) Specify the timeout per line, default is 200      | 
@@ -120,8 +120,8 @@ Each object in `PosPrintData` array account for a row.
 
 |           |                |
 |-----------|:--------------|
-| type      | 'text', 'qrCode', 'barCode' |
-| value | (string) content to be inserted in row |
+| type      | (string) 'text', 'qrCode', 'barCode' |
+| value | (string) value of the current row |
 | height | (number) applicable to only barcode and QR codes|
 | width | (number)  applicable to only barcode and QR codes|
 | style | (string) row styles, css rules can be used |
