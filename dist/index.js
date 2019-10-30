@@ -3,6 +3,8 @@
  * Copyright (c) 2019 created by Hubert Formin
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var url = require("url");
+var path = require("path");
 var BrowserWindow;
 var ipcMain;
 // if process if main
@@ -61,7 +63,11 @@ var PosPrinter = /** @class */ (function () {
             mainWindow.on('closed', function () {
                 mainWindow = null;
             });
-            mainWindow.loadURL('file://' + __dirname + '/print.html');
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'print.html'),
+                protocol: 'file:',
+                slashes: true,
+            }));
             mainWindow.webContents.on('did-finish-load', function () {
                 sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page

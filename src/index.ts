@@ -3,6 +3,9 @@
  */
 
 
+import * as url from "url";
+import * as path from "path";
+
 let BrowserWindow;
 let ipcMain;
 
@@ -94,7 +97,12 @@ export class PosPrinter {
             mainWindow.on('closed', () => {
                 (mainWindow as any) = null;
             });
-            mainWindow.loadURL('file://' + __dirname + '/print.html');
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'print.html'),
+                protocol: 'file:',
+                slashes: true,
+                // baseUrl: 'dist'
+            }));
             mainWindow.webContents.on('did-finish-load', () => {
                 sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page
