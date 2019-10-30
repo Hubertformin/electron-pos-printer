@@ -58,10 +58,6 @@ PosPrinter.print(data, options)
 ```
 
 ## Typescript
-
-```bash
-$ npm install @types/electron-thermal-print
-```
 ### Usage
 
 ```typescript
