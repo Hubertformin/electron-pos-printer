@@ -36,7 +36,6 @@
             }
         }*/
         body.css('width:' + arg.width + 'margin:' + arg.margin);
-        console.log('okay');
         event.sender.send('print-body-init-reply', arg);
     });
 
@@ -51,12 +50,10 @@
             }
         }
         body.append(div);
-        console.log(arg.value);
         event.sender.send('print-text-reply', arg);
     });
 
     ipcRender.on('print-qrCode', function (event, arg) {
-        console.log('qrcode');
         body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style}"></div>`);
         new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
             text: arg.value,
@@ -72,7 +69,6 @@
     });
 
     ipcRender.on('print-barCode', function (event, arg) {
-        console.log('barcode');
         body.append(`<img class="barCode${barcodeNumber}"  style="${arg.style}"
         jsbarcode-value="${arg.value}"
         jsbarcode-width="${arg.width}"

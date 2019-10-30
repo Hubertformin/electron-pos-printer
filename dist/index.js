@@ -61,7 +61,7 @@ var PosPrinter = /** @class */ (function () {
             mainWindow.on('closed', function () {
                 mainWindow = null;
             });
-            mainWindow.loadFile(__dirname + '/print.html');
+            mainWindow.loadURL('file://' + __dirname + '/print.html');
             mainWindow.webContents.on('did-finish-load', function () {
                 sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page

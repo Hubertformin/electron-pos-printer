@@ -94,7 +94,7 @@ export class PosPrinter {
             mainWindow.on('closed', () => {
                 (mainWindow as any) = null;
             });
-            mainWindow.loadFile(__dirname + '/print.html');
+            mainWindow.loadURL('file://' + __dirname + '/print.html');
             mainWindow.webContents.on('did-finish-load', () => {
                 sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page
