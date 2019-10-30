@@ -1,6 +1,6 @@
 # Electron-pos-printer
 Electron printer plugin, currently supports 58mm, 
-requires electron >= 4.x.x Inspired by 
+requires electron >= 4.x.x.  Inspired by 
 [electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)
 
 ### Installation
@@ -29,9 +29,9 @@ const data = [
    },{
       type: 'barCode',
       value: 'HB4587896',
-      height: 12,
-      width: 1,
-      displayValue: true,               // Display barcode value below barcode
+      height: 12,                     // height of barcode, applicable only to bar and QR codes
+      width: 1,                       // width of barcode, applicable only to bar and QR codes
+      displayValue: true,             // Display barcode value below barcode
       fontsize: 8,
    },{
      type: 'qrCode',
@@ -58,19 +58,19 @@ $ npm install @types/electron-pos-printer
 ### Usage
 
 ```typescript
-import {PosPrintData, PosPrinter, PosPrintJob,PosPrintOptions} from "./index";
+import {PosPrintData, PosPrinter, PosPrintJob,PosPrintOptions} from "electron-pos-printer";
 
 const options: PosPrintOptions = {
-   preview: false,               // Preview in window or print
-   width: '170px',               //  width of content body
-   margin: '0 0 0 0',            // margin of content body
-   printerName: 'XP-80C',        // printerName: string, check it at webContent.getPrinters()
+   preview: false,
+   width: '170px',       
+   margin: '0 0 0 0',    
+   printerName: 'XP-80C',
    timeOutPerLine: 400
 }
 
 const data: PosPrintData = [
    {
-      type: 'text',                       // 'text' | 'barCode' | 'qrCode'
+      type: 'text',
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
       css: {"font-weight": "700", "font-size": "18px"}
@@ -79,7 +79,7 @@ const data: PosPrintData = [
       value: 'HB4587896',
       height: 12,
       width: 1,
-      displayValue: true,               // Display barcode value below barcode
+      displayValue: true,
       fontsize: 8,
     },{
      type: 'qrCode',
