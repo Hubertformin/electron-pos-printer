@@ -16,15 +16,17 @@ if ((process as any).type === 'browser') {
 }
 export interface PosPrintOptions {
     /**
+     * @field copies: number of copies to print
      * @field preview: bool，false=print，true=pop preview window
      * @field deviceName: string，default device name, check it at webContent.getPrinters()
      * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
      */
+    copies?: number;
     preview?: boolean;
-    width?: string;
-    margin?: string;
     printerName: string;
+    margin?: string;
     timeOutPerLine?: number;
+    width?: string;
 }
 /**
  * @interface
@@ -135,8 +137,12 @@ export class PosPrinter {
                         mainWindow.webContents.print({
                             silent: true,
                             printBackground: true,
-                            deviceName: options.printerName
-                        }, (arg) => {
+                            deviceName: options.printerName,
+                            copies: options.copies ? options.copies : 1
+                        }, (arg, err) => {
+                            if (err) {
+                                reject(err);
+                            }
                             if (!resultSent) {
                                 resolve(arg);
                                 resultSent = true;
@@ -146,7 +152,7 @@ export class PosPrinter {
                     } else {
                         resolve(options);
                     }
-                })
+                }).catch(err => resolve(err));
             })
         });
     }   
