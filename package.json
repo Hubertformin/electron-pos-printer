@@ -1,0 +1,30 @@
+{
+  "name": "electron-pos-printer",
+  "version": "1.0.0",
+  "description": "Electron thermal printer",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "electron ./demo/",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hubertformin/electron-pos-printer.git"
+  },
+  "keywords": [
+    "electron",
+    "printer",
+    "thermal"
+  ],
+  "author": "Hubertformin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hubertformin/electron-pos-printer/issues"
+  },
+  "homepage": "https://github.com/Hubertformin/electron-pos-printer#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^7.0.0",
+    "typescript": "^3.6.4"
+  }
+}
