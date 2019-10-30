@@ -104,12 +104,12 @@ PosPrinter.print(data, options)
 ## Printing options
 | Options        |           |
 | ------------- |:-------------|
-| copies     | (number) The number of copies to print |
-| preview      | (boolean) Preview in a window, default is false |
-| width      | (string) Specify margin of content body       |
-| margin | (string)  Specify margin of page content body, CSS values can be used   | 
-| printerName | (string) Specify the printer name      | 
-| timeOutPerLine | (number) Specify the timeout per line, default is 200      | 
+| copies     | (number) number of copies to print |
+| preview      | (boolean) preview in a window, default is false |
+| width      | (string) width of a page       |
+| margin | (string)  margin of a page, css values can be used   | 
+| printerName | (string) the printer's name      | 
+| timeOutPerLine | (number) timeout per line, default is 200      | 
 
 ## Print data object
 Each object in `PosPrintData` array accounts for a row.
@@ -118,7 +118,7 @@ Each object in `PosPrintData` array accounts for a row.
 |-----------|:--------------|
 | type      | (string) 'text', 'qrCode', 'barCode' |
 | value | (string) value of the current row |
-| height | (number) applicable to only barcode and QR codes|
-| width | (number)  applicable to only barcode and QR codes|
-| style | (string) row styles, css rules can be used |
-| css | (string) css rules to be implemented |
+| height | (number) applicable to only bar and QR codes|
+| width | (number)  applicable to only bar and QR codes|
+| style | (string)  styles, css rules can be used |
+| css | (string) css rules  ex: `{"font-size": "12px"}` |
