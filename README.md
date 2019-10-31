@@ -9,7 +9,16 @@ $ npm install electron-pos-printer
 ```
 
 ### Usage
-works in main and render processes
+#### In main process
+```js
+const {PosPrinter} = require("electron-pos-printer");
+```
+#### In render process
+```js
+const {PosPrinter} = require('electron').remote.require("electron-pos-printer");
+```
+### Demo
+
 ```js
 const {PosPrinter} = require("electron-pos-printer");
 
@@ -110,6 +119,8 @@ PosPrinter.print(data, options)
 | margin | (string)  margin of a page, css values can be used   | 
 | printerName | (string) the printer's name      | 
 | timeOutPerLine | (number) timeout per line, default is 200      | 
+
+
 
 ## Print data object
 Each object in `PosPrintData` array accounts for a row.

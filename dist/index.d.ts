@@ -17,12 +17,12 @@ export interface PosPrintOptions {
  * @name PosPrintData
  * **/
 export interface PosPrintData {
-    type: PosPrinterDataType;
+    type: string;
     value: string;
     css?: any;
     style?: string;
-    width?: string;
-    height?: string;
+    width?: string | number;
+    height?: string | number;
     fontsize?: string;
     displayValue?: string;
 }
@@ -30,7 +30,6 @@ export interface PosPrintData {
  * @type
  * @name PosPrinterDataType
  * **/
-declare type PosPrinterDataType = 'text' | 'barCode' | 'qrCode';
 /**
  * @class PosPrinter
  * **/
@@ -42,4 +41,3 @@ export declare class PosPrinter {
      */
     static print(data: PosPrintData[], options: PosPrintOptions): Promise<any>;
 }
-export {};

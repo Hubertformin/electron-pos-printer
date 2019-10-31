@@ -1,22 +1,12 @@
 /*
  * Copyright (c) 2019 created by Hubert Formin
  */
-
-
-import * as url from "url";
-import * as path from "path";
-
-let BrowserWindow;
-let ipcMain;
-
-// if process if main
-if ((process as any).type === 'browser') {
-    BrowserWindow = require('electron').BrowserWindow;
-    ipcMain = require('electron').ipcMain
-} else {
-    BrowserWindow = require('electron').remote.BrowserWindow;
-    ipcMain = require('electron').remote.ipcMain;
+if ((process as any).type == 'renderer') {
+    throw new Error('electron-pos-printer: Render process not supported yet');
 }
+
+
+const {BrowserWindow, ipcMain} = require('electron');
 export interface PosPrintOptions {
     /**
      * @field copies: number of copies to print
@@ -36,12 +26,12 @@ export interface PosPrintOptions {
  * @name PosPrintData
  * **/
 export interface PosPrintData {
-    type: PosPrinterDataType;
+    type: string;
     value: string;
     css?: any;
     style?: string;
-    width?: string;
-    height?: string;
+    width?: string | number;
+    height?: string | number;
     fontsize?: string;
     displayValue?: string;
 }
@@ -49,7 +39,7 @@ export interface PosPrintData {
  * @type
  * @name PosPrinterDataType
  * **/
-declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode';
+// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode';
 
 
 /**
@@ -97,14 +87,15 @@ export class PosPrinter {
             mainWindow.on('closed', () => {
                 (mainWindow as any) = null;
             });
-            mainWindow.loadURL(url.format({
+            /*mainWindow.loadURL(url.format({
                 pathname: path.join(__dirname, 'print.html'),
                 protocol: 'file:',
                 slashes: true,
                 // baseUrl: 'dist'
-            }));
-            mainWindow.webContents.on('did-finish-load', () => {
-                sendMsg('print-body-init', mainWindow.webContents, options);
+            }));*/
+            mainWindow.loadFile(__dirname + '/print.html');
+            mainWindow.webContents.on('did-finish-load', async () => {
+                await sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page
                 new Promise((resolve, reject) => {
                     PrintLine(0);
@@ -167,14 +158,14 @@ export class PosPrinter {
 }
 
 
-/*ipcMain.on('pos-print', (event, arg)=> {
-    const {data, options} = require('')
-    PosPrinter.print(arg, {printerName: 'xpc-80'}).then((arg)=>{
-        event.sendMsg('print-pos-reply', arg);
-    }).catch(()=>{
-        event.sendMsg('print-pos-reply', false);
-    });
-});*/
+// ipcMain.on('pos-print', (event, arg)=> {
+//     const {data, options} = JSON.parse(arg);
+//     PosPrinter.print(data, options).then((arg)=>{
+//         event.sender.send('print-pos-reply', {status: true, error: {}});
+//     }).catch((err)=>{
+//         event.sender.send('print-pos-reply', {status: false, error: err});
+//     });
+// });
 
 function sendMsg(channel: any, webContents: any, arg: any) {
     return new Promise((resolve,reject)=>{
