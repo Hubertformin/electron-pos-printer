@@ -81,7 +81,7 @@ const options: PosPrintOptions = {
    timeOutPerLine: 400
 }
 
-const data: PosPrintData = [
+const data: PosPrintData[] = [
    {
       type: 'text',
       value: 'SAMPLE HEADING',
