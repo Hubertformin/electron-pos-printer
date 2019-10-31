@@ -32,8 +32,8 @@ export interface PosPrintData {
     style?: string;
     width?: string | number;
     height?: string | number;
-    fontsize?: string;
-    displayValue?: string;
+    fontsize?: number;
+    displayValue?: boolean;
 }
 /**
  * @type
@@ -53,7 +53,7 @@ export class PosPrinter {
      */
     static print(data: PosPrintData[], options: PosPrintOptions): Promise<any> {
         return new Promise((resolve, reject) => {
-            // some basic validation
+            // some basic validation and defaults
             if (!options.printerName) {
                 reject(new Error('A Printer name is required in the options object'));
             }

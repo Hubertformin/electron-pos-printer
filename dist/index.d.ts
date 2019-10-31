@@ -23,8 +23,8 @@ export interface PosPrintData {
     style?: string;
     width?: string | number;
     height?: string | number;
-    fontsize?: string;
-    displayValue?: string;
+    fontsize?: number;
+    displayValue?: boolean;
 }
 /**
  * @type

@@ -51,7 +51,6 @@
             }
         }
         body.append(div);
-        console.log(arg.value);
         event.sender.send('print-text-reply', arg);
     });
 
@@ -60,8 +59,8 @@
         body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style}"></div>`);
         new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
             text: arg.value,
-            width: arg.width,
-            height: arg.height,
+            width: arg.width ? arg.width : 1,
+            height: arg.height ? arg.height : 15,
             colorDark: '#000000',
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.H
@@ -75,11 +74,11 @@
         console.log('barcode');
         body.append(`<img class="barCode${barcodeNumber}"  style="${arg.style}"
         jsbarcode-value="${arg.value}"
-        jsbarcode-width="${arg.width}"
-        jsbarcode-height="${arg.height}"
-        jsbarcode-fontsize="${arg.fontsize}"
+        jsbarcode-width="${arg.width ? arg.width : 1}"
+        jsbarcode-height="${arg.height ? arg.height : 15}"
+        jsbarcode-fontsize="${arg.fontsize ? arg.fontsize : 12}"
         jsbarcode-margin="0"
-        jsbarcode-displayvalue="${arg.displayValue}"/>`);
+        jsbarcode-displayvalue="${!!arg.displayValue}"/>`);
         JsBarcode(`.barCode${barcodeNumber}`).init();
         barcodeNumber++;
         event.sender.send('print-barCode-reply', arg);
