@@ -40,14 +40,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Copyright (c) 2019 created by Hubert Formin
  */
 if (process.type == 'renderer') {
-    throw new Error('electron-pos-printer: Render process not supported yet');
+    throw new Error('electron-pos-printer: use');
 }
 var _a = require('electron'), BrowserWindow = _a.BrowserWindow, ipcMain = _a.ipcMain;
 /**
  * @type
  * @name PosPrinterDataType
  * **/
-// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode';
+// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode'  'image';
 /**
  * @class PosPrinter
  * **/
@@ -62,7 +62,7 @@ var PosPrinter = /** @class */ (function () {
     PosPrinter.print = function (data, options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            // some basic validation
+            // some basic validation and defaults
             if (!options.printerName) {
                 reject(new Error('A Printer name is required in the options object'));
             }
@@ -119,6 +119,18 @@ var PosPrinter = /** @class */ (function () {
                                     }
                                     var obj = data[line];
                                     switch (obj.type) {
+                                        case 'image':
+                                            if (!obj.path) {
+                                                throw new Error('An Image path is required for type image');
+                                            }
+                                            sendMsg('print-image', mainWindow.webContents, obj)
+                                                .then(function (result) {
+                                                if (!result.status) {
+                                                    throw new Error(result.error);
+                                                }
+                                                PrintLine(line + 1);
+                                            });
+                                            break;
                                         case 'text':
                                             sendMsg('print-text', mainWindow.webContents, obj)
                                                 .then(function (result) {

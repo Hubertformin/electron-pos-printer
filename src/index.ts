@@ -2,7 +2,7 @@
  * Copyright (c) 2019 created by Hubert Formin
  */
 if ((process as any).type == 'renderer') {
-    throw new Error('electron-pos-printer: Render process not supported yet');
+    throw new Error('electron-pos-printer: use');
 }
 
 
@@ -26,20 +26,27 @@ export interface PosPrintOptions {
  * @name PosPrintData
  * **/
 export interface PosPrintData {
+    /**
+     * @property type
+     * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image'
+    */
     type: string;
     value: string;
     css?: any;
     style?: string;
     width?: string | number;
     height?: string | number;
-    fontsize?: number;
-    displayValue?: boolean;
+    fontsize?: number;       // for barcodes
+    displayValue?: boolean;  // for barcodes
+    // options for images
+    position?: string;        // for images; values: 'left'| 'center' | 'right'
+    path?: string;
 }
 /**
  * @type
  * @name PosPrinterDataType
  * **/
-// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode';
+// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode'  'image';
 
 
 /**
@@ -106,6 +113,18 @@ export class PosPrinter {
                         }
                         let obj = data[line];
                         switch (obj.type) {
+                            case 'image':
+                                if (!obj.path) {
+                                    throw new Error('An Image path is required for type image');
+                                }
+                                sendMsg('print-image', mainWindow.webContents, obj)
+                                    .then((result: any) => {
+                                        if (!result.status) {
+                                            throw new Error(result.error);
+                                        }
+                                        PrintLine(line + 1);
+                                    });
+                                break;
                             case 'text':
                                 sendMsg('print-text', mainWindow.webContents, obj)
                                     .then(result => {

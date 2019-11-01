@@ -24,64 +24,6 @@
 <script src="libs/jsbarcode.min.js"></script>
 <script src="libs/qrcode.min.js"></script>
 <script src="libs/jquery.min.js"></script>
-<script>
-    const ipcRender = require('electron').ipcRenderer;
-    const body = $('#main');
-    let barcodeNumber = 0;
-    ipcRender.on('print-body-init', function (event, arg) {
-        /*let css = arg.css;
-        if (css) {
-            for (const key in css) {
-                const item = css[key];
-                body.css(key, item);
-            }
-        }*/
-        body.css('width:' + arg.width + 'margin:' + arg.margin);
-        event.sender.send('print-body-init-reply', arg);
-    });
-
-    ipcRender.on('print-text', function (event, arg) {
-        const text = arg.value;
-        const css = arg.css;
-        const div = $(`<div class="font" style="${arg.style}">${text}</div>`);
-        if (css) {
-            for (const key in css) {
-                const item = css[key];
-                div.css(key, item);
-            }
-        }
-        body.append(div);
-        event.sender.send('print-text-reply', arg);
-    });
-
-    ipcRender.on('print-qrCode', function (event, arg) {
-        body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style}"></div>`);
-        new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
-            text: arg.value,
-            width: arg.width ? arg.width : 1,
-            height: arg.height ? arg.height : 15,
-            colorDark: '#000000',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
-        });
-        // $(`#qrcode${barcodeNumber}`).attr('style',arg.style);
-        barcodeNumber++;
-        event.sender.send('print-qrCode-reply', arg);
-    });
-
-    ipcRender.on('print-barCode', function (event, arg) {
-        body.append(`<div class="barcode-container" style="text-align: center;width: 100%;">
-            <img class="barCode${barcodeNumber}"  style="${arg.style}"
-        jsbarcode-value="${arg.value}"
-        jsbarcode-width="${arg.width ? arg.width : 1}"
-        jsbarcode-height="${arg.height ? arg.height : 15}"
-        jsbarcode-fontsize="${arg.fontsize ? arg.fontsize : 12}"
-        jsbarcode-margin="0"
-        jsbarcode-displayvalue="${!!arg.displayValue}"/></div>`);
-        JsBarcode(`.barCode${barcodeNumber}`).init();
-        barcodeNumber++;
-        event.sender.send('print-barCode-reply', arg);
-    })
-</script>
+<script src="libs/body-init.js"></script>
 </body>
 </html>

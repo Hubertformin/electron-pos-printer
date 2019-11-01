@@ -17,6 +17,10 @@ export interface PosPrintOptions {
  * @name PosPrintData
  * **/
 export interface PosPrintData {
+    /**
+     * @property type
+     * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image'
+    */
     type: string;
     value: string;
     css?: any;
@@ -25,6 +29,8 @@ export interface PosPrintData {
     height?: string | number;
     fontsize?: number;
     displayValue?: boolean;
+    position?: string;
+    path?: string;
 }
 /**
  * @type

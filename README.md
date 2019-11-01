@@ -37,7 +37,7 @@ const data = [
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
       css: {"font-weight": "700", "font-size": "18px"}
-   }, {
+   },{
       type: 'text',                       // 'text' | 'barCode' | 'qrCode'
       value: 'Secondary text',
       style: `text-align:left;color: red;`,
