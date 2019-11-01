@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Electron-pos-printer</title>
+    <title>Electron-pos-printer preview</title>
     <style>
         @page {
             margin: 0;
@@ -15,7 +15,8 @@
             font-size: 12px;
             /*line-height: 24px;*/
         }
-        .font {font-size: 12px; margin: 0 20px 0 0;}
+        .barcode-container::after{content: '';display: table;clear: both;}
+        .font {font-size: 12px; margin: 0 15px;}
     </style>
 </head>
 <body>
@@ -69,13 +70,14 @@
     });
 
     ipcRender.on('print-barCode', function (event, arg) {
-        body.append(`<img class="barCode${barcodeNumber}"  style="${arg.style}"
+        body.append(`<div class="barcode-container" style="text-align: center;width: 100%;">
+            <img class="barCode${barcodeNumber}"  style="${arg.style}"
         jsbarcode-value="${arg.value}"
         jsbarcode-width="${arg.width ? arg.width : 1}"
         jsbarcode-height="${arg.height ? arg.height : 15}"
         jsbarcode-fontsize="${arg.fontsize ? arg.fontsize : 12}"
         jsbarcode-margin="0"
-        jsbarcode-displayvalue="${!!arg.displayValue}"/>`);
+        jsbarcode-displayvalue="${!!arg.displayValue}"/></div>`);
         JsBarcode(`.barCode${barcodeNumber}`).init();
         barcodeNumber++;
         event.sender.send('print-barCode-reply', arg);
