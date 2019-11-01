@@ -32,18 +32,18 @@ const options = {
 
 const data = [
    {
-     type: 'image',                               
-     path: path.join(__dirname, 'assets/banner.png'),
-     position: 'center',
-     width: 60,
-     height: 60
+     type: 'image',                                       
+     path: path.join(__dirname, 'assets/banner.png'),     // file path
+     position: 'center',                                  // position of image: 'left' | 'center' | 'right'
+     width: 60,                                           // width of image in px; default: auto
+     height: 60,                                          // width of image in px; default: 50 or '50px'
    },{
-      type: 'text',                       // 'text' | 'barCode' | 'qrCode'
+      type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image'
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
       css: {"font-weight": "700", "font-size": "18px"}
    },{
-      type: 'text',                       // 'text' | 'barCode' | 'qrCode'
+      type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image'
       value: 'Secondary text',
       style: `text-align:left;color: red;`,
       css: {"text-decoration": "underline", "font-size": "10px"}
