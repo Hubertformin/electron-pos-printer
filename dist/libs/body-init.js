@@ -4,20 +4,15 @@
 
 const fs = require('fs');
 const path = require('path');
-const concat = require('concat-stream');
-
 const ipcRender = require('electron').ipcRenderer;
+
 const body = $('#main');
 let barcodeNumber = 0;
+const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
+    'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
+
 ipcRender.on('print-body-init', function (event, arg) {
-    let css = arg.css;
-    if (css) {
-        for (const key in css) {
-            const item = css[key];
-            body.css(key, item);
-        }
-    }
-    body.css('width:' + arg.width + 'margin:' + arg.margin);
+    body.css({width: arg.width ? arg.width : 170 , margin: arg.margin ? arg.margin : 0});
     event.sender.send('print-body-init-reply', arg);
 });
 
@@ -26,6 +21,12 @@ ipcRender.on('print-image', function (event, arg) {
     try {
         const data = fs.readFileSync(arg.path);
         let ext = path.extname(arg.path).slice(1);
+        if (image_format.indexOf(ext) === -1) {
+            event.sender.send('print-image-reply', {
+                status: false,
+                error: new Error(ext +' file type not supported, consider: ' + image_format.join()).toString()});
+            return;
+        }
         if (ext === 'svg') { ext = 'svg+xml'; }
         // insert image
         const uri = 'data:image/' + ext + ';base64,' + data.toString('base64');
@@ -42,8 +43,8 @@ ipcRender.on('print-image', function (event, arg) {
         body.prepend(img_con);
         event.sender.send('print-image-reply', {status: true, error: null});
     }catch (e) {
-        console.error(e);
-        event.sender.send('print-image-reply', {status: false, error: e});
+        // console.error(e);
+        event.sender.send('print-image-reply', {status: false, error: e.toString()});
     }
 });
 
@@ -62,7 +63,7 @@ ipcRender.on('print-text', function (event, arg) {
 });
 
 ipcRender.on('print-qrCode', function (event, arg) {
-    body.append(`<div style="width:100%;text-align: ${arg.position ? arg.position : 'left'}" class="qr-con"><div id="qrCode${barcodeNumber}" style="${arg.style}"></div>`);
+    body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style};text-align: ${arg.position ? '-webkit-' + arg.position : '-webkit-left'};"></div>`);
     new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
         text: arg.value,
         width: arg.width ? arg.width : 1,

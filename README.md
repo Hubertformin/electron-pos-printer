@@ -1,7 +1,6 @@
 # Electron-pos-printer
 An electron printer plugin, currently supports 58mm, 
-requires electron >= 4.x.x.  Inspired by 
-[electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)
+requires electron >= 4.x.x.
 
 ### Installation
 ```bash
@@ -33,6 +32,12 @@ const options = {
 
 const data = [
    {
+     type: 'image',                               
+     path: path.join(__dirname, 'assets/banner.png'),
+     position: 'center',
+     width: 60,
+     height: 60
+   },{
       type: 'text',                       // 'text' | 'barCode' | 'qrCode'
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
@@ -54,7 +59,7 @@ const data = [
       value: 'https://github.com/Hubertformin/electron-pos-printer',
       height: 55,
       width: 55,
-      style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
+      style: 'margin: 10 20px 20 20px'
     }
 ]
 
@@ -81,8 +86,14 @@ const options: PosPrintOptions = {
    timeOutPerLine: 400
 }
 
-const data: PosPrintData = [
+const data: PosPrintData[] = [
    {
+     type: 'image',                               
+     path: path.join(__dirname, 'assets/banner.png'),
+     position: 'center',
+     width: 60,
+     height: 60
+   },{
       type: 'text',
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
@@ -123,13 +134,22 @@ PosPrinter.print(data, options)
 
 
 ## Print data object
-Each object in `PosPrintData` array accounts for a row.
-
 |           |                |
 |-----------|:--------------|
-| type      | (string) 'text', 'qrCode', 'barCode' // type 'text' can contain html |
+| type      | (string) 'text', 'qrCode', 'barCode', 'image' // type 'text' can contain html |
 | value | (string) value of the current row |
-| height | (number) applicable to only bar and QR codes|
-| width | (number)  applicable to only bar and QR codes|
+| height | (number) applicable to type barCode and qrCode |
+| width | (number)  applicable to type barCode and qrCode |
 | style | (string)  styles, css rules can be used |
 | css | (string) css rules  ex: `{"font-size": "12px"}` |
+| displayValue | (boolean)  display value of barcode below barcode |
+| position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image |
+
+
+## Author
+ - Hubert Formin
+ - hformin@gmail.com
+ - Twitter: @hformin
+ 
+ ## Credits
+ This package was inspired by [electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)

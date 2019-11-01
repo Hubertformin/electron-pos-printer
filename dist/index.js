@@ -1,4 +1,7 @@
 "use strict";
+/*
+ * Copyright (c) 2019. Author Hubert Formin <hformin@gmail.com>
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,18 +39,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/*
- * Copyright (c) 2019 created by Hubert Formin
- */
 if (process.type == 'renderer') {
-    throw new Error('electron-pos-printer: use');
+    throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
 }
 var _a = require('electron'), BrowserWindow = _a.BrowserWindow, ipcMain = _a.ipcMain;
-/**
- * @type
- * @name PosPrinterDataType
- * **/
-// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode'  'image';
 /**
  * @class PosPrinter
  * **/
@@ -62,24 +57,19 @@ var PosPrinter = /** @class */ (function () {
     PosPrinter.print = function (data, options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            // some basic validation and defaults
-            if (!options.printerName) {
-                reject(new Error('A Printer name is required in the options object'));
-            }
-            if (!options.width) {
-                options.width = '167px';
-            }
-            if (!options.margin) {
-                options.margin = '0 0 0 0';
+            // reject if printer name is not set in no preview
+            if (!options.preview && !options.printerName) {
+                reject(new Error('A printer name is required').toString());
             }
             // else
-            var resultSent = false;
+            var printedState = false;
+            var window_print_error;
             var timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 200;
             if (!options.preview) {
                 setTimeout(function () {
-                    if (!resultSent) {
-                        reject();
-                        resultSent = true;
+                    if (!printedState) {
+                        reject(window_print_error);
+                        printedState = true;
                     }
                 }, timeOutPerline * data.length + 1000);
             }
@@ -89,7 +79,7 @@ var PosPrinter = /** @class */ (function () {
                 height: 1200,
                 show: !!options.preview,
                 webPreferences: {
-                    nodeIntegration: true
+                    nodeIntegration: true // For electron >= 4.0.0
                 }
             });
             // mainWindow
@@ -110,23 +100,24 @@ var PosPrinter = /** @class */ (function () {
                         case 1:
                             _a.sent();
                             // initialize page
-                            new Promise(function (resolve, reject) {
+                            new Promise(function () {
                                 PrintLine(0);
                                 function PrintLine(line) {
                                     if (line >= data.length) {
-                                        resolve();
-                                        return;
+                                        resolve({ printed: true });
                                     }
                                     var obj = data[line];
                                     switch (obj.type) {
                                         case 'image':
                                             if (!obj.path) {
-                                                throw new Error('An Image path is required for type image');
+                                                mainWindow.close();
+                                                reject(new Error('An Image path is required for type image'));
                                             }
                                             sendMsg('print-image', mainWindow.webContents, obj)
                                                 .then(function (result) {
                                                 if (!result.status) {
-                                                    throw new Error(result.error);
+                                                    mainWindow.close();
+                                                    reject(result.error);
                                                 }
                                                 PrintLine(line + 1);
                                             });
@@ -165,11 +156,12 @@ var PosPrinter = /** @class */ (function () {
                                         copies: options.copies ? options.copies : 1
                                     }, function (arg, err) {
                                         if (err) {
+                                            window_print_error = err;
                                             reject(err);
                                         }
-                                        if (!resultSent) {
+                                        if (!printedState) {
                                             resolve(arg);
-                                            resultSent = true;
+                                            printedState = true;
                                         }
                                         mainWindow.close();
                                     });

@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 2019 created by Hubert Formin
+ * Copyright (c) 2019. Author Hubert Formin <hformin@gmail.com>
  */
+
 if ((process as any).type == 'renderer') {
-    throw new Error('electron-pos-printer: use');
+    throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
 }
 
 
@@ -21,6 +22,9 @@ export interface PosPrintOptions {
     timeOutPerLine?: number;
     width?: string;
 }
+
+declare type PosPrintPosition = 'left' | 'center' | 'right';
+
 /**
  * @interface
  * @name PosPrintData
@@ -30,8 +34,8 @@ export interface PosPrintData {
      * @property type
      * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image'
     */
-    type: string;
-    value: string;
+    type: PosPrintType;
+    value?: string;
     css?: any;
     style?: string;
     width?: string | number;
@@ -39,14 +43,14 @@ export interface PosPrintData {
     fontsize?: number;       // for barcodes
     displayValue?: boolean;  // for barcodes
     // options for images
-    position?: string;        // for images; values: 'left'| 'center' | 'right'
-    path?: string;
+    position?: PosPrintPosition;        // for type image, barcode and qrCode; values: 'left'| 'center' | 'right'
+    path?: string;                      // image path
 }
 /**
  * @type
- * @name PosPrinterDataType
+ * @name PosPrintType
  * **/
-// declare type PosPrinterDataType  = 'text' | 'barCode' | 'qrCode'  'image';
+declare type PosPrintType  = 'text' | 'barCode' | 'qrCode' | 'image';
 
 
 /**
@@ -60,24 +64,19 @@ export class PosPrinter {
      */
     static print(data: PosPrintData[], options: PosPrintOptions): Promise<any> {
         return new Promise((resolve, reject) => {
-            // some basic validation and defaults
-            if (!options.printerName) {
-                reject(new Error('A Printer name is required in the options object'));
-            }
-            if (!options.width) {
-                options.width = '167px'
-            }
-            if (!options.margin) {
-                options.margin = '0 0 0 0';
+            // reject if printer name is not set in no preview
+            if (!options.preview && !options.printerName) {
+                reject(new Error('A printer name is required').toString());
             }
             // else
-            let resultSent = false;
+            let printedState = false;
+            let window_print_error;
             let timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 200;
             if (!options.preview) {
                 setTimeout(() => {
-                    if (!resultSent) {
-                        reject();
-                        resultSent = true;
+                    if (!printedState) {
+                        reject(window_print_error);
+                        printedState = true;
                     }
                 }, timeOutPerline * data.length + 1000);
             }
@@ -87,7 +86,7 @@ export class PosPrinter {
                 height: 1200,
                 show: !!options.preview,
                 webPreferences: {
-                    nodeIntegration: true
+                    nodeIntegration: true        // For electron >= 4.0.0
                 }
             });
             // mainWindow
@@ -104,23 +103,24 @@ export class PosPrinter {
             mainWindow.webContents.on('did-finish-load', async () => {
                 await sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page
-                new Promise((resolve, reject) => {
+                new Promise(() => {
                     PrintLine(0);
                     function PrintLine(line) {
                         if (line >= data.length) {
-                            resolve();
-                            return;
+                            resolve({printed: true});
                         }
                         let obj = data[line];
                         switch (obj.type) {
                             case 'image':
                                 if (!obj.path) {
-                                    throw new Error('An Image path is required for type image');
+                                    mainWindow.close();
+                                    reject(new Error('An Image path is required for type image'));
                                 }
                                 sendMsg('print-image', mainWindow.webContents, obj)
                                     .then((result: any) => {
                                         if (!result.status) {
-                                            throw new Error(result.error);
+                                            mainWindow.close();
+                                            reject(result.error);
                                         }
                                         PrintLine(line + 1);
                                     });
@@ -159,11 +159,12 @@ export class PosPrinter {
                             copies: options.copies ? options.copies : 1
                         }, (arg, err) => {
                             if (err) {
+                                window_print_error = err;
                                 reject(err);
                             }
-                            if (!resultSent) {
+                            if (!printedState) {
                                 resolve(arg);
-                                resultSent = true;
+                                printedState = true;
                             }
                             mainWindow.close();
                         })

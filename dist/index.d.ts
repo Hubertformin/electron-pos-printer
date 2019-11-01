@@ -12,6 +12,7 @@ export interface PosPrintOptions {
     timeOutPerLine?: number;
     width?: string;
 }
+declare type PosPrintPosition = 'left' | 'center' | 'right';
 /**
  * @interface
  * @name PosPrintData
@@ -21,21 +22,22 @@ export interface PosPrintData {
      * @property type
      * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image'
     */
-    type: string;
-    value: string;
+    type: PosPrintType;
+    value?: string;
     css?: any;
     style?: string;
     width?: string | number;
     height?: string | number;
     fontsize?: number;
     displayValue?: boolean;
-    position?: string;
+    position?: PosPrintPosition;
     path?: string;
 }
 /**
  * @type
- * @name PosPrinterDataType
+ * @name PosPrintType
  * **/
+declare type PosPrintType = 'text' | 'barCode' | 'qrCode' | 'image';
 /**
  * @class PosPrinter
  * **/
@@ -47,3 +49,4 @@ export declare class PosPrinter {
      */
     static print(data: PosPrintData[], options: PosPrintOptions): Promise<any>;
 }
+export {};

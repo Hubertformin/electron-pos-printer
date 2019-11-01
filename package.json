@@ -1,6 +1,6 @@
 {
   "name": "electron-pos-printer",
-  "version": "1.0.7",
+  "version": "1.1.0-beta",
   "description": "Electron thermal printer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
