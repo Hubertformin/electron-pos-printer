@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha",
     "start": "electron ./demo/",
-    "build": "tsc",
+    "pack": "webpack --config ./webpack.config.js",
+    "build": "tsc && npm run pack",
     "test:all": "mocha -R mocha-jenkins-reporter --timeout 20000 \"./src/test/**/*test-*.js\"",
     "test:one": "mocha --watch -u bdd \"./src/test/**/test-*.js\" --grep \"test-login-form\""
   },
@@ -33,6 +34,9 @@
     "electron": "^7.0.0",
     "mocha": "^6.2.2",
     "spectron": "^9.0.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
   }
 }

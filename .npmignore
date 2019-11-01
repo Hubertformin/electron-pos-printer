@@ -3,3 +3,6 @@ libs/
 demo/
 test/
 src/
+
+# Ignore webpack config
+webpack.config.js

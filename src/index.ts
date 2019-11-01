@@ -99,7 +99,7 @@ export class PosPrinter {
                 slashes: true,
                 // baseUrl: 'dist'
             }));*/
-            mainWindow.loadFile(__dirname + '/print.html');
+            mainWindow.loadFile(__dirname + '/58mm.html');
             mainWindow.webContents.on('did-finish-load', async () => {
                 await sendMsg('print-body-init', mainWindow.webContents, options);
                 // initialize page
