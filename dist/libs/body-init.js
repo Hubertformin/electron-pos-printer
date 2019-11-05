@@ -49,36 +49,46 @@ ipcRender.on('print-image', function (event, arg) {
 });
 
 ipcRender.on('print-text', function (event, arg) {
-    const text = arg.value;
-    const css = arg.css;
-    const div = $(`<div class="font" style="${arg.style}">${text}</div>`);
-    if (css) {
+    try {
+        const text = arg.value;
+        const css = arg.css;
+        const div = $(`<div class="font" style="${arg.style}">${text}</div>`);
+      if (css) {
         for (const key in css) {
             const item = css[key];
             div.css(key, item);
         }
+      }
+      body.append(div);
+      // sending msg
+      event.sender.send('print-text-reply', {status: true, error: null});
+    } catch (e) {
+        event.sender.send('print-text-reply', {status: false, error: e.toString()});  
     }
-    body.append(div);
-    event.sender.send('print-text-reply', arg);
 });
 
 ipcRender.on('print-qrCode', function (event, arg) {
-    body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style};text-align: ${arg.position ? '-webkit-' + arg.position : '-webkit-left'};"></div>`);
-    new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
-        text: arg.value,
-        width: arg.width ? arg.width : 1,
-        height: arg.height ? arg.height : 15,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-    });
-    // $(`#qrcode${barcodeNumber}`).attr('style',arg.style);
-    barcodeNumber++;
-    event.sender.send('print-qrCode-reply', arg);
+    try {
+        body.append(`<div id="qrCode${barcodeNumber}" style="${arg.style};text-align: ${arg.position ? '-webkit-' + arg.position : '-webkit-left'};"></div>`);
+        new QRCode(document.getElementById(`qrCode${barcodeNumber}`), {
+          text: arg.value,
+          width: arg.width ? arg.width : 1,
+          height: arg.height ? arg.height : 15,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+       // $(`#qrcode${barcodeNumber}`).attr('style',arg.style);
+       event.sender.send('print-qrCode-reply', {status: true, error: null});
+       barcodeNumber++;
+    } catch(e) {
+        event.sender.send('print-qrCode-reply', {status: false, error: e.toString()});
+    }
 });
 
 ipcRender.on('print-barCode', function (event, arg) {
-    body.append(`<div style="width: 100%;text-align: ${arg.position ? arg.position : 'left'}" class="barcode-container" style="text-align: center;width: 100%;">
+    try {
+        body.append(`<div style="width: 100%;text-align: ${arg.position ? arg.position : 'left'}" class="barcode-container" style="text-align: center;width: 100%;">
             <img class="barCode${barcodeNumber}"  style="${arg.style}"
         jsbarcode-value="${arg.value}"
         jsbarcode-width="${arg.width ? arg.width : 1}"
@@ -86,14 +96,13 @@ ipcRender.on('print-barCode', function (event, arg) {
         jsbarcode-fontsize="${arg.fontsize ? arg.fontsize : 12}"
         jsbarcode-margin="0"
         jsbarcode-displayvalue="${!!arg.displayValue}"/></div>`);
-    JsBarcode(`.barCode${barcodeNumber}`).init();
-    barcodeNumber++;
-    event.sender.send('print-barCode-reply', arg);
+        JsBarcode(`.barCode${barcodeNumber}`).init();
+        barcodeNumber++;
+        // send
+        event.sender.send('print-barCode-reply', {status: true, error: null});
+    } catch(e) {
+        event.sender.send('print-barCode-reply', {status: false, error: e.toString()});
+    }
+    
 })
-// functions
-function renderImage(imgPath) {
-    return new Promise((resolve, reject) => {
-        // read image
 
-    });
-}
