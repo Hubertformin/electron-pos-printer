@@ -198,7 +198,7 @@ var PosPrinter = /** @class */ (function () {
                                     });
                                 }
                                 else {
-                                    resolve({ preview: true, complete: true });
+                                    resolve({ complete: true });
                                 }
                             }).catch(function (err) { return reject(err); });
                             return [2 /*return*/];

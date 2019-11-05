@@ -198,7 +198,7 @@ export class PosPrinter {
                             mainWindow.close();
                         })
                     } else {
-                        resolve({preview: true, complete: true});
+                        resolve({complete: true});
                     }
                 }).catch(err => reject(err));
             })
