@@ -71,6 +71,10 @@ var PosPrinter = /** @class */ (function () {
                         var errorMsg = window_print_error ? window_print_error : 'TimedOut';
                         reject(errorMsg);
                         printedState = true;
+                        // close window is open
+                        if (mainWindow) {
+                            mainWindow.close();
+                        }
                     }
                 }, timeOutPerline * data.length + 2000);
             }
@@ -194,7 +198,11 @@ var PosPrinter = /** @class */ (function () {
                                             resolve({ complete: arg });
                                             printedState = true;
                                         }
-                                        mainWindow.close();
+                                        // if mainWindow was created is defined
+                                        if (mainWindow) {
+                                            mainWindow.close();
+                                        }
+                                
                                     });
                                 }
                                 else {

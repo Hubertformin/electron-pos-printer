@@ -25,6 +25,7 @@ const {PosPrinter} = require('electron').remote.require("electron-pos-printer");
 
 ```js
 const {PosPrinter} = require("electron-pos-printer");
+const path = require("path");
 
 const options = {
    preview: false,               // Preview in window or print
@@ -81,6 +82,7 @@ PosPrinter.print(data, options)
 
 ```typescript
 import {PosPrinter, PosPrintData, PosPrintOptions} from "electron-pos-printer";
+import * as path from "path";
 
 const options: PosPrintOptions = {
    preview: false,
@@ -149,6 +151,7 @@ PosPrinter.print(data, options)
 | css | (string) css rules  ex: `{"font-size": "12px"}` |
 | displayValue | (boolean)  display value of barcode below barcode |
 | position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image |
+| path | (string) Path to the image asset |
 
 
 ## Author
