@@ -10,6 +10,7 @@ requires electron >= 4.x.x.
 ### Installation
 ```bash
 $ npm install electron-pos-printer
+$ yarn add electron-pos-printer
 ```
 
 ### Usage
@@ -137,6 +138,7 @@ PosPrinter.print(data, options)
 | margin | (string)  margin of a page, css values can be used   | 
 | printerName | (string) the printer's name      | 
 | timeOutPerLine | (number) timeout per line, default is 200      | 
+| silent | (boolean) To print silently without printer selection pop-up, default is true | 
 
 
 

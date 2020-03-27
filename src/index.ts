@@ -14,6 +14,7 @@ export interface PosPrintOptions {
      * @field preview: bool，false=print，true=pop preview window
      * @field deviceName: string，default device name, check it at webContent.getPrinters()
      * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
+     * @field silent: To print silently
      */
     copies?: number;
     preview?: boolean;
@@ -21,6 +22,7 @@ export interface PosPrintOptions {
     margin?: string;
     timeOutPerLine?: number;
     width?: string;
+    silent?: boolean;
 }
 
 declare type PosPrintPosition = 'left' | 'center' | 'right';
@@ -67,6 +69,10 @@ export class PosPrinter {
             // reject if printer name is not set in no preview
             if (!options.preview && !options.printerName) {
                 reject(new Error('A printer name is required').toString());
+            }
+            // if options.silent is undefined
+            if (options.silent === undefined) {
+                options.silent = true;
             }
             // else
             let printedState = false;
@@ -181,7 +187,7 @@ export class PosPrinter {
                 }).then(() => {
                     if (!options.preview) {
                         mainWindow.webContents.print({
-                            silent: true,
+                            silent: !!options.silent,
                             printBackground: true,
                             deviceName: options.printerName,
                             copies: options.copies ? options.copies : 1
