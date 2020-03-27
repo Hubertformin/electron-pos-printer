@@ -4,6 +4,7 @@ export interface PosPrintOptions {
      * @field preview: bool，false=print，true=pop preview window
      * @field deviceName: string，default device name, check it at webContent.getPrinters()
      * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
+     * @field silent: To print silently
      */
     copies?: number;
     preview?: boolean;
@@ -11,6 +12,7 @@ export interface PosPrintOptions {
     margin?: string;
     timeOutPerLine?: number;
     width?: string;
+    silent?: boolean;
 }
 declare type PosPrintPosition = 'left' | 'center' | 'right';
 /**

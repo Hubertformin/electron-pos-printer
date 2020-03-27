@@ -61,20 +61,20 @@ var PosPrinter = /** @class */ (function () {
             if (!options.preview && !options.printerName) {
                 reject(new Error('A printer name is required').toString());
             }
+            // if options.silent is undefined
+            if (options.silent === undefined) {
+                options.silent = true;
+            }
             // else
             var printedState = false;
             var window_print_error = null;
             var timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 400;
-            if (!options.preview) {
+            if (!options.preview || !options.silent) {
                 setTimeout(function () {
                     if (!printedState) {
                         var errorMsg = window_print_error ? window_print_error : 'TimedOut';
                         reject(errorMsg);
                         printedState = true;
-                        // close window is open
-                        if (mainWindow) {
-                            mainWindow.close();
-                        }
                     }
                 }, timeOutPerline * data.length + 2000);
             }
@@ -184,7 +184,7 @@ var PosPrinter = /** @class */ (function () {
                             }).then(function () {
                                 if (!options.preview) {
                                     mainWindow.webContents.print({
-                                        silent: true,
+                                        silent: !!options.silent,
                                         printBackground: true,
                                         deviceName: options.printerName,
                                         copies: options.copies ? options.copies : 1
@@ -198,11 +198,7 @@ var PosPrinter = /** @class */ (function () {
                                             resolve({ complete: arg });
                                             printedState = true;
                                         }
-                                        // if mainWindow was created is defined
-                                        if (mainWindow) {
-                                            mainWindow.close();
-                                        }
-                                
+                                        mainWindow.close();
                                     });
                                 }
                                 else {

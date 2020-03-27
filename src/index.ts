@@ -78,7 +78,7 @@ export class PosPrinter {
             let printedState = false;
             let window_print_error = null;
             let timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 400;
-            if (!options.preview) {
+            if (!options.preview || !options.silent) {
                 setTimeout(() => {
                     if (!printedState) {
                         const errorMsg = window_print_error ? window_print_error: 'TimedOut';
