@@ -24,13 +24,6 @@ export interface PosPrintOptions {
  *
  */
 export declare type PosPrintPosition = 'left' | 'center' | 'right';
-
-/**
- *
- */
-export enum PosPrintTableTheme {
-}
-
 /**
  * @interface
  * @name PosPrintTableField
