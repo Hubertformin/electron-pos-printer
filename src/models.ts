@@ -18,7 +18,32 @@ export interface PosPrintOptions {
     silent?: boolean;
 }
 
+/**
+ * @type PosPrintPosition
+ * @description Alignment for type barCode and qrCode
+ *
+ */
 export declare type PosPrintPosition = 'left' | 'center' | 'right';
+
+/**
+ *
+ */
+export enum PosPrintTableTheme {
+}
+
+/**
+ * @interface
+ * @name PosPrintTableField
+ * */
+export interface PosPrintTableField {
+    type: 'text' | 'image';
+    value?: string;
+    path?: string;
+    css?: any;
+    style?: string;
+    width?: string;  // for type image
+    height?: string; // for type image
+}
 
 /**
  * @interface
@@ -27,22 +52,27 @@ export declare type PosPrintPosition = 'left' | 'center' | 'right';
 export interface PosPrintData {
     /**
      * @property type
-     * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image'
+     * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image' | 'table'
     */
     type: PosPrintType;
     value?: string;
     css?: any;
     style?: string;
-    width?: string | number;
-    height?: string | number;
+    width?: string;
+    height?: string;
     fontsize?: number;       // for barcodes
     displayValue?: boolean;  // for barcodes
-    // options for images
     position?: PosPrintPosition;        // for type image, barcode and qrCode; values: 'left'| 'center' | 'right'
     path?: string;                      // image path
+    tableHeader: PosPrintTableField[] | string[],        // specify rows in table header, to be used with type table
+    tableBody: PosPrintTableField[] | string[],         //  specify rows in table body, to be used with type table
+    tableFooter: PosPrintTableField[] | string[],      //  specify rows in table footer, to be used with type table
+    tableHeaderStyle?: any;                // (type table), set custom style for table header
+    tableBodyStyle?: any;                // (type table), set custom style for table body
+    tableFooterStyle?: string;             // (type table), set custom style for table footer
 }
 /**
- * @type
+ * @type PosPrintType
  * @name PosPrintType
  * **/
-export declare type PosPrintType  = 'text' | 'barCode' | 'qrCode' | 'image';
+export declare type PosPrintType = 'text' | 'barCode' | 'qrCode' | 'image' | 'table';

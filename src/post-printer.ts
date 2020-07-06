@@ -2,7 +2,7 @@
  * Copyright (c) 2019-2020. Author Hubert Formin <hformin@gmail.com>
  */
 
-import { PosPrintData, PosPrintOptions } from "./models";
+import {PosPrintData, PosPrintOptions} from "./models";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
@@ -76,12 +76,12 @@ export class PosPrinter {
                 //     return;
                 // }
                 // else start initialize render prcess page
-                await sendIpcMsg('print-body-init', mainWindow.webContents, options);
+                await sendIpcMsg('body-init', mainWindow.webContents, options);
                 /**
                  * Render print data as html in the mainwindow render process
-                 * 
+                 *
                  */
-                PosPrinter.renderPrintDocument(mainWindow, data)
+                return PosPrinter.renderPrintDocument(mainWindow, data)
                 .then(() => {
                     if (!options.preview) {
                         mainWindow.webContents.print({
@@ -104,7 +104,8 @@ export class PosPrinter {
                     } else {
                         resolve({complete: true});
                     }
-                }).catch(err => reject(err));
+                })
+                    .catch(err => reject(err));
             })
         });
     }   
@@ -116,69 +117,25 @@ export class PosPrinter {
      * 
     */
     private static renderPrintDocument(window: any, data: PosPrintData[]): Promise<any> {
-        return new Promise(async (resolve, reject) => {
-            for (const line of data) {
-                switch (line.type) {
-                    case 'image':
-                        if (!line.path) {
+        return new Promise((resolve, reject) => {
+            data.forEach(async (line, lineIndex) => {
+                if (line.type === 'image' && !line.path) {
+                    window.close();
+                    reject(new Error('An Image path is required for type image').toString());
+                    return;
+                }
+                await sendIpcMsg('render-line', window.webContents, {line, lineIndex})
+                    .then((result: any) => {
+                        if (!result.status) {
                             window.close();
-                            reject(new Error('An Image path is required for type image').toString());
+                            reject(result.error);
                             return;
                         }
-                        await sendIpcMsg('print-image', window.webContents, line)
-                            .then((result: any) => {
-                                if (!result.status) {
-                                    window.close();
-                                    reject(result.error);
-                                    return;
-                                }
-                            }).catch((error) => {
-                                reject(error);
-                                    return;
-                            })
-                        break;
-                    case 'text':
-                        await sendIpcMsg('print-text', window.webContents, line)
-                            .then((result: any) => {
-                                // console.log(result);
-                                if (!result.status) {
-                                    window.close();
-                                    reject(result.error);
-                                    return;
-                                }
-                            }).catch((error) => {
-                                reject(error);
-                                    return;
-                            })
-                        break;
-                    case 'barCode':
-                        await sendIpcMsg('print-barCode', window.webContents, line)
-                            .then((result: any) => {
-                                if (!result.status) {
-                                    window.close();
-                                    reject(result.error);
-                                    return;
-                                }
-                            }).catch((error) => {
-                                reject(error);
-                                    return;
-                            })
-                        break;
-                    case 'qrCode':
-                        await sendIpcMsg('print-qrCode', window.webContents, line)
-                            .then((result: any)=> {
-                                if (!result.status) {
-                                    window.close();
-                                    reject(result.error);
-                                    return;
-                                }
-                            }).catch((error) => {
-                                reject(error);
-                                    return;
-                            })
-                        break;
-                } 
-            }
+                    }).catch((error) => {
+                        reject(error);
+                        return;
+                    });
+            });
             // when the render process is done rendering the page, resolve
             resolve({message: 'page-rendered'});
         })
@@ -192,78 +149,12 @@ export class PosPrinter {
 function sendIpcMsg(channel: any, webContents: any, arg: any) {
     return new Promise((resolve,reject)=>{
         ipcMain.once(`${channel}-reply`, function(event, result) {
-            resolve(result);
+            if (result.status) {
+                resolve(result);
+            } else {
+                reject(result.error);
+            }
         });
         webContents.send(channel,arg);
     });
 }
-
-// old code used to render data in render process
-/**
- * PrintLine(0);
-                    function PrintLine(line) {
-                        if (line >= data.length) {
-                            resolve_1();
-                            return;
-                        }
-                        // let obj = data[line];
-                        switch (obj.type) {
-                            case 'image':
-                                if (!obj.path) {
-                                    mainWindow.close();
-                                    reject_1(new Error('An Image path is required for type image').toString());
-                                    return;
-                                }
-                                sendIpcMsg('print-image', mainWindow.webContents, obj)
-                                    .then((result: any) => {
-                                        if (!result.status) {
-                                            mainWindow.close();
-                                            reject_1(result.error);
-                                            return;
-                                        }
-                                        PrintLine(line + 1);
-                                    });
-                                break;
-                            case 'text':
-                                sendIpcMsg('print-text', mainWindow.webContents, obj)
-                                    .then((result: any) => {
-                                        // console.log(result);
-                                        if (!result.status) {
-                                            mainWindow.close();
-                                            reject_1(result.error);
-                                            return;
-                                        }
-                                        PrintLine(line + 1);
-                                    });
-                                break;
-                            case 'barCode':
-                                sendIpcMsg('print-barCode', mainWindow.webContents, obj)
-                                    .then((result: any) => {
-                                        if (!result.status) {
-                                            mainWindow.close();
-                                            reject_1(result.error);
-                                            return;
-                                        }
-                                        PrintLine(line + 1);
-                                    });
-                                break;
-                            case 'qrCode':
-                                sendIpcMsg('print-qrCode', mainWindow.webContents, obj)
-                                    .then((result: any)=> {
-                                        if (!result.status) {
-                                            mainWindow.close();
-                                            reject_1(result.error);
-                                            return;
-                                        }
-                                        // console.log(result);
-                                        PrintLine(line + 1);
-                                    });
-                                break;
-                            default:
-                                PrintLine(line + 1);
-                                break;
-                        }
-                        
-                    }
- * 
- */
