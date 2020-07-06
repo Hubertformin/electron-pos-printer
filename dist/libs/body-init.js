@@ -89,78 +89,84 @@ async function renderDataToHTML(event, arg) {
             const tBody = $(`<tbody style="${arg.line.tableBodyStyle}"></tbody>`);
             const tFooter = $(`<tfoot style="${arg.line.tableFooterStyle}"></tfoot>`);
             // 1. Headers
-            arg.line.tableHeader.forEach(async (headerArg, index) => {
-                if (typeof headerArg === "object") {
-                    switch (headerArg.type) {
-                        case 'image':
-                            await getImageFromPath(headerArg)
-                                .then(img => {
-                                    const th = $(`<th></th>`);
-                                    th.append(img);
-                                    tHeader.append(th);
-                                }).catch((e) => {
-                                    event.sender.send('render-line-reply', {status: false, error: e.toString()});
-                                })
-                            return;
-                        case 'text':
-                            tHeader.append(generateTableCell(headerArg, 'th'));
-                            return;
-                    }
-                } else {
-                    const th = $(`<th>${headerArg}</th>`);
-                    tHeader.append(th);
-                }
-            });
-            // 2. Body
-            arg.line.tableBody.forEach((bodyRow) => {
-                const rowTr = $('<tr></tr>');
-                bodyRow.forEach(async (colArg, index) => {
-                    if (typeof colArg === 'object') {
-                        switch (colArg.type) {
+            if (arg.line.tableHeader) {
+                arg.line.tableHeader.forEach(async (headerArg, index) => {
+                    if (typeof headerArg === "object") {
+                        switch (headerArg.type) {
                             case 'image':
-                                await getImageFromPath(colArg)
+                                await getImageFromPath(headerArg)
                                     .then(img => {
-                                        const th = $(`<td></td>`);
+                                        const th = $(`<th></th>`);
                                         th.append(img);
-                                        rowTr.append(th);
+                                        tHeader.append(th);
                                     }).catch((e) => {
                                         event.sender.send('render-line-reply', {status: false, error: e.toString()});
                                     })
                                 return;
                             case 'text':
-                                rowTr.append(generateTableCell(colArg));
+                                tHeader.append(generateTableCell(headerArg, 'th'));
                                 return;
                         }
                     } else {
-                        const th = $(`<td>${colArg}</td>`);
-                        rowTr.append(th);
+                        const th = $(`<th>${headerArg}</th>`);
+                        tHeader.append(th);
                     }
                 });
-                tBody.append(rowTr);
-            })
+            }
+            // 2. Body
+            if (arg.line.tableBody) {
+                arg.line.tableBody.forEach((bodyRow) => {
+                    const rowTr = $('<tr></tr>');
+                    bodyRow.forEach(async (colArg, index) => {
+                        if (typeof colArg === 'object') {
+                            switch (colArg.type) {
+                                case 'image':
+                                    await getImageFromPath(colArg)
+                                        .then(img => {
+                                            const th = $(`<td></td>`);
+                                            th.append(img);
+                                            rowTr.append(th);
+                                        }).catch((e) => {
+                                            event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                                        })
+                                    return;
+                                case 'text':
+                                    rowTr.append(generateTableCell(colArg));
+                                    return;
+                            }
+                        } else {
+                            const th = $(`<td>${colArg}</td>`);
+                            rowTr.append(th);
+                        }
+                    });
+                    tBody.append(rowTr);
+                });
+            }
             // 3. Footer
-            arg.line.tableFooter.forEach(async (footerArg, index) => {
-                if (typeof footerArg === 'object') {
-                    switch (footerArg.type) {
-                        case 'image':
-                            await getImageFromPath(footerArg)
-                                .then(img => {
-                                    const footerTh = $(`<th></th>`);
-                                    footerTh.append(img);
-                                    tFooter.append(footerTh);
-                                }).catch((e) => {
-                                    event.sender.send('render-line-reply', {status: false, error: e.toString()});
-                                })
-                            return;
-                        case 'text':
-                            tFooter.append(generateTableCell(footerArg, 'th'));
-                            return;
+            if (arg.line.tableFooter) {
+                arg.line.tableFooter.forEach(async (footerArg, index) => {
+                    if (typeof footerArg === 'object') {
+                        switch (footerArg.type) {
+                            case 'image':
+                                await getImageFromPath(footerArg)
+                                    .then(img => {
+                                        const footerTh = $(`<th></th>`);
+                                        footerTh.append(img);
+                                        tFooter.append(footerTh);
+                                    }).catch((e) => {
+                                        event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                                    })
+                                return;
+                            case 'text':
+                                tFooter.append(generateTableCell(footerArg, 'th'));
+                                return;
+                        }
+                    } else {
+                        const footerTh = $(`<th>${footerArg}</th>`);
+                        tFooter.append(footerTh);
                     }
-                } else {
-                    const footerTh = $(`<th>${footerArg}</th>`);
-                    tFooter.append(footerTh);
-                }
-            });
+                });
+            }
             // render table
             table.append(tHeader);
             table.append(tBody);

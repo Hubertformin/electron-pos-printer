@@ -42,15 +42,15 @@ const data = [
      type: 'image',                                       
      path: path.join(__dirname, 'assets/banner.png'),     // file path
      position: 'center',                                  // position of image: 'left' | 'center' | 'right'
-     width: 60,                                           // width of image in px; default: auto
-     height: 60,                                          // width of image in px; default: 50 or '50px'
+     width: '60px',                                           // width of image in px; default: auto
+     height: '60px',                                          // width of image in px; default: 50 or '50px'
    },{
-      type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image'
+      type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
       css: {"font-weight": "700", "font-size": "18px"}
    },{
-      type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image'
+      type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table'
       value: 'Secondary text',
       style: `text-align:left;color: red;`,
       css: {"text-decoration": "underline", "font-size": "10px"}
@@ -67,7 +67,48 @@ const data = [
       height: 55,
       width: 55,
       style: 'margin: 10 20px 20 20px'
-    }
+    },{
+       type: 'table',
+       // style the table
+       style: 'border: 1px solid #ddd',
+       // list of the columns to be rendered in the table header
+       tableHeader: ['Animal', 'Age'],
+       // multi dimensional array depicting the rows and columns of the table body
+       tableBody: [
+           ['Cat', 2],
+           ['Dog', 4],
+           ['Horse', 12],
+           ['Pig', 4],
+       ],
+       // list of columns to be rendered in the table footer
+       tableFooter: ['Animal', 'Age'],
+       // custom style for the table header
+       tableHeaderStyle: 'background-color: #000; color: white;',
+       // custom style for the table body
+       tableBodyStyle: 'border: 0.5px solid #ddd',
+       // custom style for the table footer
+       tableFooterStyle: 'background-color: #000; color: white;',
+    },{
+       type: 'table',
+       style: 'border: 1px solid #ddd',             // style the table
+       // list of the columns to be rendered in the table header
+       tableHeader: [{type: 'text', value: 'Animal'}, {type: 'image', path: path.join(__dirname, 'icons/animal.png')}],
+       // multi dimensional array depicting the rows and columns of the table body
+       tableBody: [
+           [{type: 'text', value: 'Cat'}, {type: 'image', path: './animals/cat.jpg'}],
+           [{type: 'text', value: 'Dog'}, {type: 'image', path: './animals/dog.jpg'}],
+           [{type: 'text', value: 'Horse'}, {type: 'image', path: './animals/horse.jpg'}],
+           [{type: 'text', value: 'Pig'}, {type: 'image', path: './animals/pig.jpg'}],
+       ],
+       // list of columns to be rendered in the table footer
+       tableFooter: [{type: 'text', value: 'Animal'}, 'Image'],
+       // custom style for the table header
+       tableHeaderStyle: 'background-color: #000; color: white;',
+       // custom style for the table body
+       tableBodyStyle: 'border: 0.5px solid #ddd',
+       // custom style for the table footer
+       tableFooterStyle: 'background-color: #000; color: white;',
+    },
 ]
 
 PosPrinter.print(data, options)
@@ -96,32 +137,77 @@ const options: PosPrintOptions = {
 
 const data: PosPrintData[] = [
    {
-     type: 'image',                               
-     path: path.join(__dirname, 'assets/banner.png'),
-     position: 'center',
-     width: 60,
-     height: 60
+     type: 'image',                                       
+     path: path.join(__dirname, 'assets/banner.png'),     // file path
+     position: 'center',                                  // position of image: 'left' | 'center' | 'right'
+     width: '60px',                                           // width of image in px; default: auto
+     height: '60px',                                          // width of image in px; default: 50 or '50px'
    },{
-      type: 'text',
+      type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
       value: 'SAMPLE HEADING',
       style: `text-align:center;`,
       css: {"font-weight": "700", "font-size": "18px"}
    },{
+      type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table'
+      value: 'Secondary text',
+      style: `text-align:left;color: red;`,
+      css: {"text-decoration": "underline", "font-size": "10px"}
+   },{
       type: 'barCode',
       value: 'HB4587896',
-      height: 12,
-      width: 1,
-      displayValue: true,
+      height: 12,                     // height of barcode, applicable only to bar and QR codes
+      width: 1,                       // width of barcode, applicable only to bar and QR codes
+      displayValue: true,             // Display value below barcode
       fontsize: 8,
-    },{
+   },{
      type: 'qrCode',
       value: 'https://github.com/Hubertformin/electron-pos-printer',
       height: 55,
       width: 55,
-      style: 'text-align:center;width:55px;margin: 10 20px 20 20px'
-    }
+      style: 'margin: 10 20px 20 20px'
+    },{
+       type: 'table',
+       // style the table
+       style: 'border: 1px solid #ddd',
+       // list of the columns to be rendered in the table header
+       tableHeader: ['Animal', 'Age'],
+       // multi dimensional array depicting the rows and columns of the table body
+       tableBody: [
+           ['Cat', 2],
+           ['Dog', 4],
+           ['Horse', 12],
+           ['Pig', 4],
+       ],
+       // list of columns to be rendered in the table footer
+       tableFooter: ['Animal', 'Age'],
+       // custom style for the table header
+       tableHeaderStyle: 'background-color: #000; color: white;',
+       // custom style for the table body
+       tableBodyStyle: 'border: 0.5px solid #ddd',
+       // custom style for the table footer
+       tableFooterStyle: 'background-color: #000; color: white;',
+    },{
+       type: 'table',
+       style: 'border: 1px solid #ddd',             // style the table
+       // list of the columns to be rendered in the table header
+       tableHeader: [{type: 'text', value: 'Animal'}, {type: 'image', path: path.join(__dirname, 'icons/animal.png')}],
+       // multi dimensional array depicting the rows and columns of the table body
+       tableBody: [
+           [{type: 'text', value: 'Cat'}, {type: 'image', path: './animals/cat.jpg'}],
+           [{type: 'text', value: 'Dog'}, {type: 'image', path: './animals/dog.jpg'}],
+           [{type: 'text', value: 'Horse'}, {type: 'image', path: './animals/horse.jpg'}],
+           [{type: 'text', value: 'Pig'}, {type: 'image', path: './animals/pig.jpg'}],
+       ],
+       // list of columns to be rendered in the table footer
+       tableFooter: [{type: 'text', value: 'Animal'}, 'Image'],
+       // custom style for the table header
+       tableHeaderStyle: 'background-color: #000; color: white;',
+       // custom style for the table body
+       tableBodyStyle: 'border: 0.5px solid #ddd',
+       // custom style for the table footer
+       tableFooterStyle: 'background-color: #000; color: white;',
+    },
 ]
-
 PosPrinter.print(data, options)
  .then(() => {})
  .catch((error) => {
@@ -142,10 +228,10 @@ PosPrinter.print(data, options)
 
 
 
-## Print data object
+## The Print data object
 |           |                |
 |-----------|:--------------|
-| type      | (string) 'text', 'qrCode', 'barCode', 'image' // type 'text' can contain html |
+| type      | (string) 'text', 'qrCode', 'barCode', 'image', 'table' // type 'text' can be an html string |
 | value | (string) value of the current row |
 | height | (number) applicable to type barCode and qrCode |
 | width | (number)  applicable to type barCode and qrCode |
@@ -154,7 +240,12 @@ PosPrinter.print(data, options)
 | displayValue | (boolean)  display value of barcode below barcode |
 | position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image |
 | path | (string) Path to the image asset |
-
+| tableHeader: | (PosPrintTableField[], string[]) the columns to be rendered in the header of the table, works with type table |
+| tableBody: | (PosPrintTableField[][], string[][]) the columns to be rendered in the body of the table, works with type table |
+| tableFooter: | (PosPrintTableField[], string[]) the columns to rendered it the footer of the table, works with type table |
+| tableHeaderStyle | (string) set custom style to the table header |
+| tableBodyStyle | (string) set custom style to the table body |
+| tableFooterStyle | (string) set custom style to the table footer |
 
 ## Author
  - Hubert Formin
