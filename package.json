@@ -1,6 +1,6 @@
 {
   "name": "electron-pos-printer",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Electron receipt printer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,8 @@
   "keywords": [
     "electron",
     "printer",
-    "thermal"
+    "thermal",
+    "pos"
   ],
   "author": "Hubertformin <hformin@gmail.com>",
   "license": "ISC",
