@@ -7,6 +7,8 @@
 An electron printer plugin, currently supports 58mm, 
 requires electron >= 4.x.x.
 
+[<img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" >](https://www.buymeacoffee.com/hformin)
+
 ### Installation
 ```bash
 $ npm install electron-pos-printer
@@ -251,6 +253,8 @@ PosPrinter.print(data, options)
  - Hubert Formin
  - hformin@gmail.com
  - Twitter: @hformin
+ 
+ [<img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" >](https://www.buymeacoffee.com/hformin)
  
  ## Credits
  This package was inspired by [electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)
