@@ -14,8 +14,6 @@ requires electron >= 4.x.x.
 $ npm install electron-pos-printer
 $ yarn add electron-pos-printer
 ```
-Check out this [Demo](https://github.com/fssonca/electron-printer ) by [fssonca](https://github.com/fssonca) 
-
 ### Usage
 #### In main process
 ```js
@@ -26,6 +24,8 @@ const {PosPrinter} = require("electron-pos-printer");
 const {PosPrinter} = require('electron').remote.require("electron-pos-printer");
 ```
 ### Demo
+
+Check out this [Demo](https://github.com/fssonca/electron-printer ) by [fssonca](https://github.com/fssonca) 
 
 ```js
 const {PosPrinter} = require("electron-pos-printer");
