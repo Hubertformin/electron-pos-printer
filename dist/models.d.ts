@@ -21,11 +21,6 @@ export interface PosPrintOptions {
  */
 export declare type PosPrintPosition = 'left' | 'center' | 'right';
 /**
- *
- */
-export declare enum PosPrintTableTheme {
-}
-/**
  * @interface
  * @name PosPrintTableField
  * */
@@ -57,9 +52,9 @@ export interface PosPrintData {
     displayValue?: boolean;
     position?: PosPrintPosition;
     path?: string;
-    tableHeader: PosPrintTableField[] | string[];
-    tableBody: PosPrintTableField[] | string[];
-    tableFooter: PosPrintTableField[] | string[];
+    tableHeader?: PosPrintTableField[] | string[];
+    tableBody?: PosPrintTableField[][] | string[][];
+    tableFooter?: PosPrintTableField[] | string[];
     tableHeaderStyle?: string;
     tableBodyStyle?: string;
     tableFooterStyle?: string;
