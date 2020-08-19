@@ -16,8 +16,14 @@ export interface PosPrintOptions {
     timeOutPerLine?: number;
     width?: string;
     silent?: boolean;
+    pageSize?: SizeOptions;
 }
 
+
+export interface SizeOptions {
+    height: number;
+    width: number;
+}
 /**
  * @type PosPrintPosition
  * @description Alignment for type barCode and qrCode
