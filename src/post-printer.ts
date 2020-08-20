@@ -88,7 +88,8 @@ export class PosPrinter {
                             silent: !!options.silent,
                             printBackground: true,
                             deviceName: options.printerName,
-                            copies: options.copies ? options.copies : 1
+                            copies: options.copies ? options.copies : 1,
+                            pageSize: options.pageSize ? options.pageSize : 'A4'
                         }, (arg, err) => {
                             // console.log(arg, err);
                             if (err) {
