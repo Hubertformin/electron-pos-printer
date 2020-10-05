@@ -243,9 +243,9 @@ PosPrinter.print(data, options)
 | displayValue | (boolean)  display value of barcode below barcode |
 | position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image |
 | path | (string) Path to the image asset |
-| tableHeader: | (PosPrintTableField[], string[]) the columns to be rendered in the header of the table, works with type table |
-| tableBody: | (PosPrintTableField[][], string[][]) the columns to be rendered in the body of the table, works with type table |
-| tableFooter: | (PosPrintTableField[], string[]) the columns to rendered it the footer of the table, works with type table |
+| tableHeader | (PosPrintTableField[], string[]) the columns to be rendered in the header of the table, works with type table |
+| tableBody | (PosPrintTableField[][], string[][]) the columns to be rendered in the body of the table, works with type table |
+| tableFooter | (PosPrintTableField[], string[]) the columns to rendered it the footer of the table, works with type table |
 | tableHeaderStyle | (string) set custom style to the table header |
 | tableBodyStyle | (string) set custom style to the table body |
 | tableFooterStyle | (string) set custom style to the table footer |
