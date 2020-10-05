@@ -36,8 +36,9 @@ const options = {
    width: '170px',               //  width of content body
    margin: '0 0 0 0',            // margin of content body
    copies: 1,                    // Number of copies to print
-   printerName: 'XP-80C',        // printerName: string, check it at webContent.getPrinters()
-   timeOutPerLine: 400
+   printerName: 'XP-80C',        // printerName: string, check with webContent.getPrinters()
+   timeOutPerLine: 400,
+   pageSize: { height: 301000, width: 71000 }  // page size
 }
 
 const data = [
@@ -135,7 +136,8 @@ const options: PosPrintOptions = {
    margin: '0 0 0 0',    
    copies: 1,
    printerName: 'XP-80C',
-   timeOutPerLine: 400
+   timeOutPerLine: 400,
+   pageSize: { height: 301000, width: 71000 } // page size
 }
 
 const data: PosPrintData[] = [
@@ -228,6 +230,7 @@ PosPrinter.print(data, options)
 | printerName | (string) the printer's name      | 
 | timeOutPerLine | (number) timeout per line, default is 200      | 
 | silent | (boolean) To print silently without printer selection pop-up, default is true | 
+| pageSize | (SizeOptions) Specify the width and height of the print out page |
 
 
 
@@ -257,5 +260,3 @@ PosPrinter.print(data, options)
  
  [<img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" >](https://www.buymeacoffee.com/hformin)
  
- ## Credits
- This package was inspired by [electron-thermal-printer](https://https://www.npmjs.com/package/electron-thermal-printer)
