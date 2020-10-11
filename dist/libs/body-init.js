@@ -77,7 +77,7 @@ async function renderDataToHTML(event, arg) {
         case 'table':
             // Creating table
             const tableContainer = $(`
-               <div style="min-height:100px;"></div>`);
+               <div></div>`);
             const table = $(`<table id="table${arg.lineIndex}" style="${arg.line.style}"></table>`);
             if (arg.line.css) {
                 for (const key in arg.line.css) {
