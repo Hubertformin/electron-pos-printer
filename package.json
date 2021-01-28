@@ -33,7 +33,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "electron": "^7.3.2",
+    "electron": "^9.4.0",
     "mocha": "^6.2.3",
     "spectron": "^9.0.0",
     "typescript": "^3.9.6",
