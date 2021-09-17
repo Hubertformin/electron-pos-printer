@@ -90,6 +90,7 @@ var PosPrinter = /** @class */ (function () {
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,
+                    contextIsolation: false
                 }
             });
             // mainWindow
