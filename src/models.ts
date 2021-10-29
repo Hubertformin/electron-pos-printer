@@ -8,6 +8,7 @@ export interface PosPrintOptions {
      * @field deviceName: string，default device name, check it at webContent.getPrinters()
      * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
      * @field silent: To print silently
+     * @field pathTemplate: Path to HTML file for custom print options
      */
     copies?: number;
     preview?: boolean;
@@ -17,6 +18,7 @@ export interface PosPrintOptions {
     width?: string;
     silent?: boolean;
     pageSize?: SizeOptions;
+    pathTemplate?: string;
 }
 
 
