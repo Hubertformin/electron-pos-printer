@@ -233,23 +233,23 @@ PosPrinter.print(data, options)
 
 
 ## The Print data object
-|           |                |
-|-----------|:--------------|
-| type      | (string) 'text', 'qrCode', 'barCode', 'image', 'table' // type 'text' can be an html string |
-| value | (string) value of the current row |
-| height | (number) applicable to type barCode and qrCode |
-| width | (number)  applicable to type barCode and qrCode |
-| style | (string)  styles, css rules can be used |
-| css | (string) css rules  ex: `{"font-size": "12px"}` |
-| displayValue | (boolean)  display value of barcode below barcode |
-| position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image |
-| path | (string) Path to the image asset |
-| tableHeader | (PosPrintTableField[], string[]) the columns to be rendered in the header of the table, works with type table |
+|           |                                                                                                                 |
+|-----------|:----------------------------------------------------------------------------------------------------------------|
+| type      | (string) 'text', 'qrCode', 'barCode', 'image', 'table' // type 'text' can be an html string                     |
+| value | (string) value of the current row                                                                               |
+| height | (number) applicable to type barCode and qrCode                                                                  |
+| width | (number)  applicable to type barCode and qrCode                                                                 |
+| style | (string)  styles, css rules can be used                                                                         |
+| css | (string) css rules  ex: `{"font-size": "12px"}`                                                                 |
+| displayValue | (boolean)  display value of barcode below barcode                                                               |
+| position | (string) 'left', 'center', 'right' applicable to type qrCode, barCode and image                                 |
+| path | (string) Path to the image asset or base 64 encoding of image                                                   |
+| tableHeader | (PosPrintTableField[], string[]) the columns to be rendered in the header of the table, works with type table   |
 | tableBody | (PosPrintTableField[][], string[][]) the columns to be rendered in the body of the table, works with type table |
-| tableFooter | (PosPrintTableField[], string[]) the columns to rendered it the footer of the table, works with type table |
-| tableHeaderStyle | (string) set custom style to the table header |
-| tableBodyStyle | (string) set custom style to the table body |
-| tableFooterStyle | (string) set custom style to the table footer |
+| tableFooter | (PosPrintTableField[], string[]) the columns to rendered it the footer of the table, works with type table      |
+| tableHeaderStyle | (string) set custom style to the table header                                                                   |
+| tableBodyStyle | (string) set custom style to the table body                                                                     |
+| tableFooterStyle | (string) set custom style to the table footer                                                                   |
 
 ## Author
  - Hubert Formin
