@@ -215,7 +215,7 @@ exports.PosPrinter = PosPrinter;
 */
 function sendIpcMsg(channel, webContents, arg) {
     return new Promise(function (resolve, reject) {
-        ipcMain.once(channel + "-reply", function (event, result) {
+        ipcMain.once("".concat(channel, "-reply"), function (event, result) {
             if (result.status) {
                 resolve(result);
             }

@@ -1,28 +1,45 @@
 /*
  * Copyright (c) 2019-2020. Author Hubert Formin <hformin@gmail.com>
  */
+
+export declare type PaperSize = 'A3' | 'A4' | 'A5' | 'Legal' | 'Letter' | 'Tabloid';
+
+export interface SizeOptions {
+    height: number;
+    width: number;
+}
+
 export interface PosPrintOptions {
     /**
-     * @field copies: number of copies to print
-     * @field preview: bool，false=print，true=pop preview window
-     * @field deviceName: string，default device name, check it at webContent.getPrinters()
-     * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
-     * @field silent: To print silently
+     * @description Print options
+     * {@link https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback}
      */
+    header?: string;
+    footer?: string;
     copies?: number;
     preview?: boolean;
     printerName: string;
     margin?: string;
     timeOutPerLine?: number;
-    width?: string;
+    // width?: string;
     silent?: boolean;
-    pageSize?: SizeOptions;
-}
-
-
-export interface SizeOptions {
-    height: number;
-    width: number;
+    color?: boolean;
+    printBackground?; boolean;
+    margins?: {
+        marginType?: 'default' | 'none'| 'printableArea'| 'custom',
+        top?: number;
+        bottom?: number;
+        right?: number;
+        left?: number;
+    }
+    landscape?: boolean;
+    scaleFactor?: number;
+    pagesPerSheet?: number;
+    collate?: boolean;
+    pageRanges?: { from: number, to: number}[],
+    duplexMode?: 'simplex' | 'shortEdge' | 'longEdge',
+    pageSize?: PaperSize | SizeOptions,
+    dpi?: { horizontal: number, vertical: number }
 }
 /**
  * @type PosPrintPosition

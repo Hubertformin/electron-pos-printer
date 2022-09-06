@@ -3,6 +3,7 @@
  */
 
 import {PosPrintData, PosPrintOptions} from "./models";
+import * as path from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
@@ -66,7 +67,7 @@ export class PosPrinter {
                 slashes: true,
                 // baseUrl: 'dist'
             }));*/
-            mainWindow.loadFile(__dirname + '/pos.html');
+            mainWindow.loadFile(path.resolve(__dirname, 'pos.html'));
             mainWindow.webContents.on('did-finish-load', async () => {
                 // get system printers
                 // const system_printers = mainWindow.webContents.getPrinters();
@@ -89,8 +90,8 @@ export class PosPrinter {
                             silent: !!options.silent,
                             printBackground: true,
                             deviceName: options.printerName,
-                            copies: options.copies ? options.copies : 1,
-                            pageSize: options.pageSize ? options.pageSize : 'A4'
+                            copies: options?.copies || 1,
+                            pageSize:  options?.pageSize || 'Letter'
                         }, (arg, err) => {
                             // console.log(arg, err);
                             if (err) {
