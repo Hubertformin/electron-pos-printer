@@ -3,7 +3,6 @@
  */
 
 import { PosPrintData, PosPrintOptions} from "./models";
-import * as path from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
