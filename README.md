@@ -215,17 +215,28 @@ PosPrinter.print(data, options)
 ```
 
 ## Printing options
-| Options        |                                                                               |
-| ------------- |:------------------------------------------------------------------------------|
-| copies     | (number) number of copies to print                                            |
-| preview      | (boolean) preview in a window, default is false                               |
-| width      | (string) width of a page                                                      |
-| margin | (string)  margin of a page, css values can be used                            | 
-| printerName | (string) the printer's name                                                   | 
-| timeOutPerLine | (number) timeout per line, default is 200                                     | 
-| silent | (boolean) To print silently without printer selection pop-up, default is true | 
-| pageSize | (SizeOptions) Specify the width and height of the print out page              |
-| pathTemplate | (string) Path to custom html template. Can be used for custom print styles.   | 
+| Options        | Required | Description                                                                                                                                                                                                                                                  |
+|----------------|:----------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| printerName    | Yes | (string) the printer's name                                                                                                                                                                                                                                  | 
+| copies         | No  | (number) number of copies to print                                                                                                                                                                                                                           |
+| preview        | No  | (boolean) preview in a window, default is false                                                                                                                                                                                                              |
+| width          | No  | (string) width of a page                                                                                                                                                                                                                                     |
+| margin         | No  | (string)  margin of a page, css values can be used                                                                                                                                                                                                           | 
+| timeOutPerLine | No  | (number) timeout per line, default is 200                                                                                                                                                                                                                    | 
+| silent         | No  | (boolean) To print silently without printer selection pop-up, default is true                                                                                                                                                                                | 
+| pageSize       | No  | (SizeOptions) Specify the width and height of the print out page                                                                                                                                                                                             |
+| pathTemplate   | No  | (string) Path to custom html template. Can be used for custom print styles.                                                                                                                                                                                  | 
+| header         | No  | (string) string to be printed as page header.                                                                                                                                                                                                                | 
+| footer         | No  | (string) string to be printed as page footer.                                                                                                                                                                                                                | 
+| margins        | No  | (object) Page margins. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                            | 
+| landscape      | No  | (boolean) Whether the page should be printed in landscape mode. Default is `false`.                                                                                                                                                                          | 
+| scaleFactor    | No  | (number) The scale factor of the web page.                                                                                                                                                                                                                   | 
+| pagesPerSheet  | No  | (number) The number of pages to print per page sheet.                                                                                                                                                                                                        | 
+| collate        | No  | (boolean) Whether the page should be collated.                                                                                                                                                                                                               | 
+| pageRanges     | No  | (object[]) The page range to print. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                               | 
+| duplexMode     | No  | (string) Set the duplex mode of the printed web page. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                             | 
+| pageSize       | No  | (string or object) Specify page size of the printed document. Can be A3, A4, A5, Legal, Letter, Tabloid or an Object containing height and width. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) | 
+| dpi            | No  | (object) [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                                          | 
 
 > ## Important
 > The `css` property is no longer supported, instead use style. <br />
