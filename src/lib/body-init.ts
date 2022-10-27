@@ -2,17 +2,25 @@
  * Copyright (c) 2019. Author Hubert Formin <hformin@gmail.com>
  */
 
+
+import {PosPrintPosition, PrintDataStyle} from "../models";
+
 const fs = require('fs');
 const path = require('path');
 const ipcRender = require('electron').ipcRenderer;
+const request = require('request').defaults({ encoding: null });
+const QRCode = require('qrcode');
+const JsBarcode = require("jsbarcode");
 
-const body = $('#main');
+const body = document.getElementById('main') as HTMLElement;
 let barcodeNumber = 0;
 const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
     'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
 
 ipcRender.on('body-init', function (event, arg) {
-    body.css({width: arg.width ? arg.width : 170 , margin: arg.margin ? arg.margin : 0});
+    body.style.width = arg?.width || '100%';
+    body.style.margin = arg?.margin ||  0;
+
     event.sender.send('body-init-reply', {status: true, error: null});
 });
 // render each line
@@ -24,155 +32,189 @@ async function renderDataToHTML(event, arg) {
     switch (arg.line.type) {
         case 'text':
             try {
-                body.append(generatePageText(arg.line));
+                console.log('render: text');
+                console.log(arg.line)
+                body.appendChild(generatePageText(arg.line));
                 // sending msg
                 event.sender.send('render-line-reply', {status: true, error: null});
             } catch (e) {
-                event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
             }
             return;
         case 'image':
-            await getImageFromPath(arg.line)
-                .then(img => {
-                    body.append(img);
-                    event.sender.send('render-line-reply', {status: true, error: null});
-                }).catch(e => {
-                    event.sender.send('render-line-reply', {status: false, error: e.toString()});
-                })
+            try {
+                const img = await renderImageToPage(arg.line);
+
+                body.appendChild(img);
+                event.sender.send('render-line-reply', {status: true, error: null});
+            } catch (e) {
+                console.log(e)
+                event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
+            }
             return;
         case 'qrCode':
             try {
-                body.append(`<div id="qrCode${arg.lineIndex}" style="${arg.line.style};text-align: ${arg.line.position ? '-webkit-' + arg.line.position : '-webkit-left'};"></div>`);
-                new QRCode(document.getElementById(`qrCode${arg.lineIndex}`), {
-                    text: arg.line.value,
-                    width: arg.line.width ? arg.line.width : 1,
-                    height: arg.line.height ? arg.line.height : 15,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
+                const container = document.createElement('div');
+                container.style.display = 'flex';
+                container.style.justifyContent = arg.line?.position || 'left';
+
+                const qrCode = document.createElement('canvas');
+                qrCode.setAttribute('id', `qrCode${arg.lineIndex}`);
+                applyElementCssStyles(qrCode, { 'textAlign': arg.line.position ? '-webkit-' + arg.line.position : '-webkit-left'});
+
+                container.appendChild(qrCode);
+                body.appendChild(container);
+
+                await generateQRCode(`qrCode${arg.lineIndex}`, {
+                    value: arg.line.value,
+                    width: arg.line.width,
+                    height: arg.line.height,
                 });
+
                 // $(`#qrcode${barcodeNumber}`).attr('style',arg.style);
                 event.sender.send('render-line-reply', {status: true, error: null});
             } catch(e) {
-                event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
             }
             return;
         case 'barCode':
             try {
-                body.append(`<div style="width: 100%;text-align: ${arg.line.position ? arg.line.position : 'left'}"class="barcode-container" style="text-align: center;width: 100%;">
-                    <img class="barCode${arg.lineIndex}"  style="${arg.line.style}"
-                jsbarcode-value="${arg.line.value}"
-                jsbarcode-width="${arg.line.width ? arg.line.width : 1}"
-                jsbarcode-height="${arg.line.height ? arg.line.height : 15}"
-                jsbarcode-fontsize="${arg.line.fontsize ? arg.line.fontsize : 12}"
-                jsbarcode-margin="0"
-                jsbarcode-displayvalue="${!!arg.line.displayValue}"/></div>`);
-                JsBarcode(`.barCode${arg.lineIndex}`).init();
+                const barcodeEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                barcodeEl.setAttributeNS(null, 'id', `barCode-${arg.lineIndex}`);
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-format', 'up');
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-value', arg.line.value);
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-textmargin', "0");
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-fontoptions', "bold");
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-fontsize', arg.line.fontsize ? arg.line.fontsize : 12);
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-height', arg.line.height ? arg.line.height : 15);
+                // barcodeEl.setAttributeNS(null, 'jsbarcode-width', arg.line.width ? arg.line.height : 15);
+                body.appendChild(barcodeEl);
+
+                console.log(parseInt(arg.line.width));
+                
+                JsBarcode(`#barCode-${arg.lineIndex}`, arg.line.value, {
+                    // format: "",
+                    lineColor: "#000",
+                    textMargin: 0,
+                    fontOptions: 'bold',
+                    fontSize: arg.line.fontsize || 12,
+                    width: parseInt(arg.line.width) || 4,
+                    height: parseInt(arg.line.height) || 40,
+                    displayValue: !!arg.line.displayValue
+                });
                 // send
                 event.sender.send('render-line-reply', {status: true, error: null});
             } catch(e) {
-                event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                console.log(e);
+                event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
             }
             return;
         case 'table':
             // Creating table
-            const tableContainer = $(`
-               <div></div>`);
-            const table = $(`<table id="table${arg.lineIndex}" style="${arg.line.style}"></table>`);
-            if (arg.line.css) {
-                for (const key in arg.line.css) {
-                    const item = arg.line.css[key];
-                    table.css(key, item);
-                }
-            }
-            const tHeader = $(`<thead style="${arg.line.tableHeaderStyle}"></thead>`);
-            const tBody = $(`<tbody style="${arg.line.tableBodyStyle}"></tbody>`);
-            const tFooter = $(`<tfoot style="${arg.line.tableFooterStyle}"></tfoot>`);
+            let tableContainer = document.createElement('div');
+            tableContainer.setAttribute('id', `table-container-${arg.lineIndex}`)
+            let table = document.createElement('table');
+            table.setAttribute('id', `table${arg.lineIndex}`);
+            table = applyElementCssStyles(table, { ...arg.line.style }) as HTMLTableElement;
+            
+            let tHeader = document.createElement('thead');
+            tHeader = applyElementCssStyles(tHeader, arg.line.tableHeaderStyle) as HTMLTableSectionElement;
+            
+            let tBody = document.createElement('tbody');
+            tBody = applyElementCssStyles(tBody, arg.line.tableBodyStyle) as HTMLTableSectionElement;
+            
+            let tFooter = document.createElement('tfoot');
+            tFooter = applyElementCssStyles(tFooter, arg.line.tableFooterStyle) as HTMLTableSectionElement;
             // 1. Headers
             if (arg.line.tableHeader) {
-                arg.line.tableHeader.forEach(async (headerArg, index) => {
-                    if (typeof headerArg === "object") {
-                        switch (headerArg.type) {
-                            case 'image':
-                                await getImageFromPath(headerArg)
-                                    .then(img => {
-                                        const th = $(`<th></th>`);
-                                        th.append(img);
-                                        tHeader.append(th);
-                                    }).catch((e) => {
-                                        event.sender.send('render-line-reply', {status: false, error: e.toString()});
-                                    })
-                                return;
-                            case 'text':
-                                tHeader.append(generateTableCell(headerArg, 'th'));
-                                return;
+                for (const headerArg of arg.line.tableHeader) {
+                    {
+                        if (typeof headerArg === "object") {
+                            switch (headerArg.type) {
+                                case 'image':
+                                    await renderImageToPage(headerArg)
+                                        .then(img => {
+                                            const th = document.createElement(`th`);
+                                            th.appendChild(img);
+                                            tHeader.appendChild(th);
+                                        }).catch((e) => {
+                                            event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
+                                        })
+                                    break;
+                                case 'text':
+                                    tHeader.appendChild(generateTableCell(headerArg, 'th'));
+                                    break;
+                            }
+                        } else {
+                            const th = document.createElement(`th`);
+                            th.innerHTML = headerArg;
+                            tHeader.appendChild(th);
                         }
-                    } else {
-                        const th = $(`<th>${headerArg}</th>`);
-                        tHeader.append(th);
                     }
-                });
+                }
             }
             // 2. Body
             if (arg.line.tableBody) {
-                arg.line.tableBody.forEach((bodyRow) => {
-                    const rowTr = $('<tr></tr>');
-                    bodyRow.forEach(async (colArg, index) => {
+                for (const bodyRow of arg.line.tableBody) {
+                    const rowTr = document.createElement('tr');
+                    for (const colArg of bodyRow) {
                         if (typeof colArg === 'object') {
                             switch (colArg.type) {
                                 case 'image':
-                                    await getImageFromPath(colArg)
+                                    await renderImageToPage(colArg)
                                         .then(img => {
-                                            const th = $(`<td></td>`);
-                                            th.append(img);
-                                            rowTr.append(th);
+                                            const th = document.createElement(`td`);
+                                            th.appendChild(img);
+                                            rowTr.appendChild(th);
                                         }).catch((e) => {
-                                            event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                                            event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
                                         })
-                                    return;
+                                    break;
                                 case 'text':
-                                    rowTr.append(generateTableCell(colArg));
-                                    return;
+                                    rowTr.appendChild(generateTableCell(colArg));
+                                    break;
                             }
                         } else {
-                            const th = $(`<td>${colArg}</td>`);
-                            rowTr.append(th);
+                            const td = document.createElement(`td`);
+                            td.innerHTML = colArg;
+                            rowTr.appendChild(td);
                         }
-                    });
-                    tBody.append(rowTr);
-                });
+                    }
+                    tBody.appendChild(rowTr);
+                }
             }
             // 3. Footer
             if (arg.line.tableFooter) {
-                arg.line.tableFooter.forEach(async (footerArg, index) => {
+                for (const footerArg of arg.line.tableFooter)  {
                     if (typeof footerArg === 'object') {
                         switch (footerArg.type) {
                             case 'image':
-                                await getImageFromPath(footerArg)
+                                await renderImageToPage(footerArg)
                                     .then(img => {
-                                        const footerTh = $(`<th></th>`);
-                                        footerTh.append(img);
-                                        tFooter.append(footerTh);
+                                        const footerTh = document.createElement(`th`);
+                                        footerTh.appendChild(img);
+                                        tFooter.appendChild(footerTh);
                                     }).catch((e) => {
-                                        event.sender.send('render-line-reply', {status: false, error: e.toString()});
+                                        event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
                                     })
-                                return;
+                                break;
                             case 'text':
-                                tFooter.append(generateTableCell(footerArg, 'th'));
-                                return;
+                                tFooter.appendChild(generateTableCell(footerArg, 'th'));
+                                break;
                         }
                     } else {
-                        const footerTh = $(`<th>${footerArg}</th>`);
-                        tFooter.append(footerTh);
+                        const footerTh = document.createElement(`th`);
+                        footerTh.innerHTML = footerArg;
+                        tFooter.appendChild(footerTh);
                     }
-                });
+                }
             }
             // render table
-            table.append(tHeader);
-            table.append(tBody);
-            table.append(tFooter);
-            tableContainer.append(table);
-            body.append(tableContainer);
+            table.appendChild(tHeader);
+            table.appendChild(tBody);
+            table.appendChild(tFooter);
+            tableContainer.appendChild(table);
+            body.appendChild(tableContainer);
             // send
             event.sender.send('render-line-reply', {status: true, error: null});
             return;
@@ -181,74 +223,84 @@ async function renderDataToHTML(event, arg) {
 /**
  * @function
  * @name generatePageText
- * @param arg {pass argumet of type PosPrintData}
+ * @param arg {pass argument of type PosPrintData}
  * @description used for type text, used to generate type text
  * */
 function generatePageText(arg) {
     const text = arg.value;
-    const css = arg.css;
-    arg.style = arg.style ? arg.style : '';
-    const div = $(`<div class="font" style="${arg.style}">${text}</div>`);
-    if (css) {
-        for (const key in css) {
-            const item = css[key];
-            div.css(key, item);
-        }
-    }
+    let div = document.createElement('div') as HTMLElement;
+    div.innerHTML = text;
+    div = applyElementCssStyles(div, arg.style) as HTMLElement;
+
     return div;
 }
 /**
  * @function
  * @name generateTableCell
- * @param arg {pass argumet of type PosPrintData}
+ * @param arg {pass argument of type PosPrintData}
  * @description used for type text, used to generate type text
  * */
-function generateTableCell(arg, type = 'td') {
+function generateTableCell(arg, type = 'td'): HTMLElement {
     const text = arg.value;
-    const css = arg.css;
-    arg.style = arg.style ? arg.style : '';
-    const th = type === 'th' ? $(`<th style="padding:7px 2px;${arg.style}">${text}</th>`) : $(`<td style="padding:7px 2px;${arg.style}">${text}</td>`);
-    if (css) {
-        for (const key in css) {
-            const item = css[key];
-            th.css(key, item);
-        }
-    }
-    return th;
+
+    let cellElement: HTMLElement;
+
+    cellElement = document.createElement(type);
+    cellElement.innerHTML  = text
+    cellElement = applyElementCssStyles(cellElement, { padding: '7px 2px', ...arg.style })
+
+    return cellElement;
 }
 /**
  * @function
- * @name getImageFromPath
- * @param arg {pass argumet of type PosPrintData}
+ * @name renderImageToPage
+ * @param arg {pass argument of type PosPrintData}
  * @description get image from path and return it as an html img
  * */
-function getImageFromPath(arg) {
-    return new Promise((resolve, reject) => {
+function renderImageToPage(arg): Promise<HTMLElement> {
+    return new Promise(async (resolve, reject) => {
         // Check if string is a valid base64, if yes, send the file url directly
         let uri;
-        const img_con = $(`<div style="width: 100%;text-align:${arg.position ? arg.position : 'left'}"></div>`);
-        arg.style = arg.style ? arg.style : '';
+        let img_con = document.createElement('div');
 
-        if (isBase64(arg.path)) {
-            uri = arg.path;
-        } else {
-            const data = fs.readFileSync(arg.path);
-            let ext = path.extname(arg.path).slice(1);
-            if (image_format.indexOf(ext) === -1) {
-                reject(new Error(ext +' file type not supported, consider the types: ' + image_format.join()));
+        img_con = applyElementCssStyles(img_con, {
+            width: '100%',
+            display: 'flex',
+            justifyContent: arg.line?.position || 'left'
+        }) as HTMLDivElement;
+
+        if (arg.url) {
+            if (!isValidHttpUrl(arg.url) && !isBase64(arg.url)) {
+                return reject(`Invalid url: ${arg.url}`);
             }
-            if (ext === 'svg') { ext = 'svg+xml'; }
-            // insert image
-            const uri = 'data:image/' + ext + ';base64,' + data.toString('base64');
+
+            uri = arg.url;
+        } else if (arg.path) {
+            // file mut be
+            try {
+                const data = fs.readFileSync(arg.path);
+                let ext = path.extname(arg.path).slice(1);
+                if (image_format.indexOf(ext) === -1) {
+                    reject(new Error(ext +' file type not supported, consider the types: ' + image_format.join()));
+                }
+                if (ext === 'svg') { ext = 'svg+xml'; }
+                // insert image
+                uri = 'data:image/' + ext + ';base64,' + data.toString('base64');
+            } catch (e) {
+                reject(e);
+            }
         }
 
-        const img = $(`<img src="${uri}" style="height: ${arg.height ? arg.height : '50px'};width: ${arg.width ? arg.width : 'auto'};${arg.style}" />`);
-        if (arg.css) {
-            for (const key in arg.css) {
-                const item = arg.css[key];
-                img.css(key, item);
-            }
-        }
+        let img = document.createElement("img") as HTMLImageElement;
+
+        img = applyElementCssStyles(img, {
+            height: arg.height,
+            width: arg.width,
+            ...arg.style
+        }) as HTMLImageElement;
+
+        img.src = uri;
+
         // appending
         img_con.prepend(img);
         resolve(img_con);
@@ -269,6 +321,68 @@ async function isFile(path) {
     return stats.isFile()
 }
 
-async function isBase64(str) {
+function isBase64(str) {
     return Buffer.from(str, 'base64').toString('base64') === str;
+}
+
+type PageElement = HTMLElement | HTMLDivElement | HTMLImageElement;
+
+function applyElementCssStyles(element: PageElement, style: PrintDataStyle): PageElement {
+    // Object.keys(css).forEach(key => {
+    //     const c = key.split('-');
+    //     if(c[1]) {
+    //         styles[`${c[0]}${c[1][0].toUpperCase()}${c[1].slice(1)}`] = css[key];
+    //     } else {
+    //         return styles[c[0]] = css[key];
+    //     }
+    // });
+
+    for (const styleProp of Object.keys(style)) {
+        if (!style[styleProp]) {
+            continue;
+        }
+        element.style[styleProp] = style[styleProp];
+    }
+    return element;
+}
+
+function isValidHttpUrl(string) {
+    let url;
+
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
+function generateQRCode(elementId: string, { value, height = 15, width = 1}) {
+    return new Promise((resolve, reject) => {
+        QRCode.toCanvas(
+            document.getElementById(elementId), value, {
+                width,
+                height,
+                errorCorrectionLevel: 'H',
+                color: '#000',
+            },function (error) {
+            if (error) {
+                return reject(error);
+            }
+            resolve('success!');
+        })
+    })
+}
+
+function getPositionStyle(position?: PosPrintPosition): string {
+    switch (position) {
+        case 'left':
+        default:
+            return 'flex-start';
+        case 'center':
+            return position;
+        case 'right':
+            return 'flex-right';
+    }
 }
