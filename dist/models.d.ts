@@ -19,7 +19,7 @@ export interface PosPrintOptions {
     footer?: string;
     copies?: number;
     preview?: boolean;
-    printerName: string;
+    printerName?: string;
     margin?: string;
     timeOutPerLine?: number;
     silent?: boolean;
