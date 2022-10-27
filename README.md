@@ -215,16 +215,17 @@ PosPrinter.print(data, options)
 ```
 
 ## Printing options
-| Options        |           |
-| ------------- |:-------------|
-| copies     | (number) number of copies to print |
-| preview      | (boolean) preview in a window, default is false |
-| width      | (string) width of a page       |
-| margin | (string)  margin of a page, css values can be used   | 
-| printerName | (string) the printer's name      | 
-| timeOutPerLine | (number) timeout per line, default is 200      | 
+| Options        |                                                                               |
+| ------------- |:------------------------------------------------------------------------------|
+| copies     | (number) number of copies to print                                            |
+| preview      | (boolean) preview in a window, default is false                               |
+| width      | (string) width of a page                                                      |
+| margin | (string)  margin of a page, css values can be used                            | 
+| printerName | (string) the printer's name                                                   | 
+| timeOutPerLine | (number) timeout per line, default is 200                                     | 
 | silent | (boolean) To print silently without printer selection pop-up, default is true | 
-| pageSize | (SizeOptions) Specify the width and height of the print out page |
+| pageSize | (SizeOptions) Specify the width and height of the print out page              |
+| pathTemplate | (string) Path to custom html template. Can be used for custom print styles.   | 
 
 > ## Important
 > The `css` property is no longer supported, instead use style. <br />
