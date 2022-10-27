@@ -13,6 +13,12 @@ export interface PosPrintOptions {
     /**
      * @description Print options
      * {@link https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback}
+     * @field copies: number of copies to print
+     * @field preview: bool，false=print，true=pop preview window
+     * @field deviceName: string，default device name, check it at webContent.getPrinters()
+     * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
+     * @field silent: To print silently
+     * @field pathTemplate: Path to HTML file for custom print options
      */
     header?: string;
     width?: string | number; // width of page and body
@@ -40,7 +46,14 @@ export interface PosPrintOptions {
     pageRanges?: { from: number, to: number}[],
     duplexMode?: 'simplex' | 'shortEdge' | 'longEdge',
     pageSize?: PaperSize | SizeOptions,
-    dpi?: { horizontal: number, vertical: number }
+    dpi?: { horizontal: number, vertical: number },
+    pathTemplate?: string;
+}
+
+
+export interface SizeOptions {
+    height: number;
+    width: number;
 }
 /**
  * @type PosPrintPosition
