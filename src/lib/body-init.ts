@@ -1,20 +1,16 @@
 /*
  * Copyright (c) 2019. Author Hubert Formin <hformin@gmail.com>
  */
-
-
-import {PrintDataStyle} from "../models";
-
 const fs = require('fs');
 const path = require('path');
-const ipcRender = require('electron').ipcRenderer;
+import {PrintDataStyle} from "../models";
 const QRCode = require('qrcode');
+const ipcRender = require('electron').ipcRenderer;
 const JsBarcode = require("jsbarcode");
 
-const body = document.getElementById('main') as HTMLElement;
+type PageElement = HTMLElement | HTMLDivElement | HTMLImageElement;
 
-const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
-    'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
+const body = document.getElementById('main') as HTMLElement;
 
 ipcRender.on('body-init', function (event, arg) {
     body.style.width = arg?.width || '100%';
@@ -22,17 +18,186 @@ ipcRender.on('body-init', function (event, arg) {
 
     event.sender.send('body-init-reply', {status: true, error: null});
 });
-// render each line
+/**
+ * Listen to render request form the main process,
+ * Once the main process sends line data, render this data in the web page
+ */
 ipcRender.on('render-line', function (event, arg) {
     renderDataToHTML(event, arg);
 });
 
+/**
+ * @function
+ * @name generatePageText
+ * @param arg {pass argument of type PosPrintData}
+ * @description used for type text, used to generate type text
+ * */
+function generatePageText(arg) {
+    const text = arg.value;
+    let div = document.createElement('div') as HTMLElement;
+    div.innerHTML = text;
+    div = applyElementStyles(div, arg.style) as HTMLElement;
+
+    return div;
+}
+/**
+ * @function
+ * @name generateTableCell
+ * @param arg {pass argument of type PosPrintData}
+ * @param type {string}
+ * @description used for type text, used to generate type text
+ * */
+function generateTableCell(arg, type = 'td'): HTMLElement {
+    const text = arg.value;
+
+    let cellElement: HTMLElement;
+
+    cellElement = document.createElement(type);
+    cellElement.innerHTML  = text
+    cellElement = applyElementStyles(cellElement, { padding: '7px 2px', ...arg.style })
+
+    return cellElement;
+}
+/**
+ * @function
+ * @name renderImageToPage
+ * @param arg {pass argument of type PosPrintData}
+ * @description get image from path and return it as a html img
+ * */
+function renderImageToPage(arg): Promise<HTMLElement> {
+    return new Promise(async (resolve, reject) => {
+        // Check if string is a valid base64, if yes, send the file url directly
+        let uri;
+        let img_con = document.createElement('div');
+
+        const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
+            'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
+
+        img_con = applyElementStyles(img_con, {
+            width: '100%',
+            display: 'flex',
+            justifyContent: arg?.position || 'left'
+        }) as HTMLDivElement;
+
+        if (arg.url) {
+            if (!isValidHttpUrl(arg.url) && !isBase64(arg.url)) {
+                return reject(`Invalid url: ${arg.url}`);
+            }
+
+            uri = arg.url;
+        } else if (arg.path) {
+            // file mut be
+            try {
+                const data = fs.readFileSync(arg.path);
+                let ext = path.extname(arg.path).slice(1);
+                if (image_format.indexOf(ext) === -1) {
+                    reject(new Error(ext +' file type not supported, consider the types: ' + image_format.join()));
+                }
+                if (ext === 'svg') { ext = 'svg+xml'; }
+                // insert image
+                uri = 'data:image/' + ext + ';base64,' + data.toString('base64');
+            } catch (e) {
+                reject(e);
+            }
+        }
+
+        let img = document.createElement("img") as HTMLImageElement;
+
+        img = applyElementStyles(img, {
+            height: arg.height,
+            width: arg.width,
+            ...arg.style
+        }) as HTMLImageElement;
+
+        img.src = uri;
+
+        // appending
+        img_con.prepend(img);
+        resolve(img_con);
+    });
+}
+
+/**
+ * @function
+ * @name generateTableCell
+ * @param str {string}
+ * @description Checks if a string is a base64 string
+ * */
+function isBase64(str) {
+    return Buffer.from(str, 'base64').toString('base64') === str;
+}
+
+/**
+ * @function
+ * @name generateTableCell
+ * @param element {PageElement}
+ * @param style {PrintDataStyle}
+ * @description Apply styles to created elements on print web page.
+ * */
+function applyElementStyles(element: PageElement, style: PrintDataStyle): PageElement {
+
+    for (const styleProp of Object.keys(style)) {
+        if (!style[styleProp]) {
+            continue;
+        }
+        element.style[styleProp] = style[styleProp];
+    }
+    return element;
+}
+
+/**
+ * @function
+ * @name generateTableCell
+ * @param url {string}
+ * @description Checks is if a string is a valid URL
+ * */
+function isValidHttpUrl(url: string) {
+    let validURL;
+
+    try {
+        validURL = new URL(url);
+    } catch (_) {
+        return false;
+    }
+
+    return validURL.protocol === "http:" || validURL.protocol === "https:";
+}
+
+/**
+ * @function
+ * @name generateTableCell
+ * @param elementId {string}
+ * @param options {object}
+ * @description Generate QR in page
+ * */
+function generateQRCode(elementId: string, { value, height = 15, width = 1}) {
+    return new Promise((resolve, reject) => {
+        QRCode.toCanvas(
+            document.getElementById(elementId), value, {
+                width,
+                height,
+                errorCorrectionLevel: 'H',
+                color: '#000',
+            }, (error) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve('success!');
+            })
+    })
+}
+
+/**
+ * @function
+ * @name generatePageText
+ * @param event {any} IpcEvent
+ * @param arg {pass argument of type PosPrintData}
+ * @description Render data as HTML to page
+ * */
 async function renderDataToHTML(event, arg) {
     switch (arg.line.type) {
         case 'text':
             try {
-                console.log('render: text');
-                console.log(arg.line)
                 body.appendChild(generatePageText(arg.line));
                 // sending msg
                 event.sender.send('render-line-reply', {status: true, error: null});
@@ -59,7 +224,7 @@ async function renderDataToHTML(event, arg) {
 
                 const qrCode = document.createElement('canvas');
                 qrCode.setAttribute('id', `qrCode${arg.lineIndex}`);
-                applyElementCssStyles(qrCode, { 'textAlign': arg.line.position ? '-webkit-' + arg.line.position : '-webkit-left'});
+                applyElementStyles(qrCode, { 'textAlign': arg.line.position ? '-webkit-' + arg.line.position : '-webkit-left'});
 
                 container.appendChild(qrCode);
                 body.appendChild(container);
@@ -80,16 +245,7 @@ async function renderDataToHTML(event, arg) {
             try {
                 const barcodeEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 barcodeEl.setAttributeNS(null, 'id', `barCode-${arg.lineIndex}`);
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-format', 'up');
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-value', arg.line.value);
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-textmargin', "0");
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-fontoptions', "bold");
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-fontsize', arg.line.fontsize ? arg.line.fontsize : 12);
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-height', arg.line.height ? arg.line.height : 15);
-                // barcodeEl.setAttributeNS(null, 'jsbarcode-width', arg.line.width ? arg.line.height : 15);
                 body.appendChild(barcodeEl);
-
-                console.log(parseInt(arg.line.width));
                 
                 JsBarcode(`#barCode-${arg.lineIndex}`, arg.line.value, {
                     // format: "",
@@ -104,7 +260,6 @@ async function renderDataToHTML(event, arg) {
                 // send
                 event.sender.send('render-line-reply', {status: true, error: null});
             } catch(e) {
-                console.log(e);
                 event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
             }
             return;
@@ -114,16 +269,16 @@ async function renderDataToHTML(event, arg) {
             tableContainer.setAttribute('id', `table-container-${arg.lineIndex}`)
             let table = document.createElement('table');
             table.setAttribute('id', `table${arg.lineIndex}`);
-            table = applyElementCssStyles(table, { ...arg.line.style }) as HTMLTableElement;
+            table = applyElementStyles(table, { ...arg.line.style }) as HTMLTableElement;
             
             let tHeader = document.createElement('thead');
-            tHeader = applyElementCssStyles(tHeader, arg.line.tableHeaderStyle) as HTMLTableSectionElement;
+            tHeader = applyElementStyles(tHeader, arg.line.tableHeaderStyle) as HTMLTableSectionElement;
             
             let tBody = document.createElement('tbody');
-            tBody = applyElementCssStyles(tBody, arg.line.tableBodyStyle) as HTMLTableSectionElement;
+            tBody = applyElementStyles(tBody, arg.line.tableBodyStyle) as HTMLTableSectionElement;
             
             let tFooter = document.createElement('tfoot');
-            tFooter = applyElementCssStyles(tFooter, arg.line.tableFooterStyle) as HTMLTableSectionElement;
+            tFooter = applyElementStyles(tFooter, arg.line.tableFooterStyle) as HTMLTableSectionElement;
             // 1. Headers
             if (arg.line.tableHeader) {
                 for (const headerArg of arg.line.tableHeader) {
@@ -218,146 +373,5 @@ async function renderDataToHTML(event, arg) {
             event.sender.send('render-line-reply', {status: true, error: null});
             return;
     }
-}
-/**
- * @function
- * @name generatePageText
- * @param arg {pass argument of type PosPrintData}
- * @description used for type text, used to generate type text
- * */
-function generatePageText(arg) {
-    const text = arg.value;
-    let div = document.createElement('div') as HTMLElement;
-    div.innerHTML = text;
-    div = applyElementCssStyles(div, arg.style) as HTMLElement;
-
-    return div;
-}
-/**
- * @function
- * @name generateTableCell
- * @param arg {pass argument of type PosPrintData}
- * @param type {string}
- * @description used for type text, used to generate type text
- * */
-function generateTableCell(arg, type = 'td'): HTMLElement {
-    const text = arg.value;
-
-    let cellElement: HTMLElement;
-
-    cellElement = document.createElement(type);
-    cellElement.innerHTML  = text
-    cellElement = applyElementCssStyles(cellElement, { padding: '7px 2px', ...arg.style })
-
-    return cellElement;
-}
-/**
- * @function
- * @name renderImageToPage
- * @param arg {pass argument of type PosPrintData}
- * @description get image from path and return it as a html img
- * */
-function renderImageToPage(arg): Promise<HTMLElement> {
-    return new Promise(async (resolve, reject) => {
-        // Check if string is a valid base64, if yes, send the file url directly
-        let uri;
-        let img_con = document.createElement('div');
-
-        img_con = applyElementCssStyles(img_con, {
-            width: '100%',
-            display: 'flex',
-            justifyContent: arg.line?.position || 'left'
-        }) as HTMLDivElement;
-
-        if (arg.url) {
-            if (!isValidHttpUrl(arg.url) && !isBase64(arg.url)) {
-                return reject(`Invalid url: ${arg.url}`);
-            }
-
-            uri = arg.url;
-        } else if (arg.path) {
-            // file mut be
-            try {
-                const data = fs.readFileSync(arg.path);
-                let ext = path.extname(arg.path).slice(1);
-                if (image_format.indexOf(ext) === -1) {
-                    reject(new Error(ext +' file type not supported, consider the types: ' + image_format.join()));
-                }
-                if (ext === 'svg') { ext = 'svg+xml'; }
-                // insert image
-                uri = 'data:image/' + ext + ';base64,' + data.toString('base64');
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        let img = document.createElement("img") as HTMLImageElement;
-
-        img = applyElementCssStyles(img, {
-            height: arg.height,
-            width: arg.width,
-            ...arg.style
-        }) as HTMLImageElement;
-
-        img.src = uri;
-
-        // appending
-        img_con.prepend(img);
-        resolve(img_con);
-    });
-}
-
-function isBase64(str) {
-    return Buffer.from(str, 'base64').toString('base64') === str;
-}
-
-type PageElement = HTMLElement | HTMLDivElement | HTMLImageElement;
-
-function applyElementCssStyles(element: PageElement, style: PrintDataStyle): PageElement {
-    // Object.keys(css).forEach(key => {
-    //     const c = key.split('-');
-    //     if(c[1]) {
-    //         styles[`${c[0]}${c[1][0].toUpperCase()}${c[1].slice(1)}`] = css[key];
-    //     } else {
-    //         return styles[c[0]] = css[key];
-    //     }
-    // });
-
-    for (const styleProp of Object.keys(style)) {
-        if (!style[styleProp]) {
-            continue;
-        }
-        element.style[styleProp] = style[styleProp];
-    }
-    return element;
-}
-
-function isValidHttpUrl(string) {
-    let url;
-
-    try {
-        url = new URL(string);
-    } catch (_) {
-        return false;
-    }
-
-    return url.protocol === "http:" || url.protocol === "https:";
-}
-
-function generateQRCode(elementId: string, { value, height = 15, width = 1}) {
-    return new Promise((resolve, reject) => {
-        QRCode.toCanvas(
-            document.getElementById(elementId), value, {
-                width,
-                height,
-                errorCorrectionLevel: 'H',
-                color: '#000',
-            },function (error) {
-            if (error) {
-                return reject(error);
-            }
-            resolve('success!');
-        })
-    })
 }
 

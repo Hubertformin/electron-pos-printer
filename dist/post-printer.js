@@ -1,7 +1,4 @@
 "use strict";
-/*
- * Copyright (c) 2019-2020. Author Hubert Formin <hformin@gmail.com>
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,18 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PosPrinter = void 0;
+const electron_1 = require("electron");
 if (process.type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
 }
-const electron_1 = require("electron");
-// ipcMain.on('pos-print', (event, arg)=> {
-//     const {data, options} = JSON.parse(arg);
-//     PosPrinter.print(data, options).then((arg)=>{
-//         event.sender.send('print-pos-reply', {status: true, error: {}});
-//     }).catch((err)=>{
-//         event.sender.send('print-pos-reply', {status: false, error: err});
-//     });
-// });
 /**
  * @class PosPrinter
  * **/
@@ -36,22 +25,22 @@ class PosPrinter {
      */
     static print(data, options) {
         return new Promise((resolve, reject) => {
-            // reject if printer name is not set in no preview mode
-            if (!options.preview && !options.printerName) {
-                reject(new Error('A printer name is required').toString());
+            // Reject if printer name is not set in live mode
+            if (!options.preview && !options.printerName && !options.silent) {
+                reject(new Error("A printer name is required, if you don't want to specify a printer name, set silent to true").toString());
             }
             // else
             let printedState = false; // If the job has been printer or not
             let window_print_error = null; // The error returned if the printing fails
-            let timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 400;
+            let timeOut = options.timeOutPerLine ? options.timeOutPerLine * data.length + 200 : 400;
             if (!options.preview || !options.silent) {
                 setTimeout(() => {
                     if (!printedState) {
-                        const errorMsg = window_print_error ? window_print_error : 'TimedOut';
+                        const errorMsg = window_print_error || '[TimedOutError] Make sure your printer is connected';
                         reject(errorMsg);
                         printedState = true;
                     }
-                }, timeOutPerline * data.length + 200);
+                }, timeOut);
             }
             // open electron window
             let mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, formatPageSize(options.pageSize)), { show: !!options.preview, webPreferences: {
@@ -116,12 +105,34 @@ class PosPrinter {
      *
      */
     static renderPrintDocument(window, data) {
-        return new Promise((resolve, reject) => {
-            data.forEach((line, lineIndex) => __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            // data.forEach(async (line, lineIndex) => );
+            for (const [lineIndex, line] of data.entries()) {
+                // ========== VALIDATION =========
+                /**
+                 * Throw an error if image is set without path or url.
+                 */
                 if (line.type === 'image' && !line.path && !line.url) {
                     window.close();
                     reject(new Error('An Image url/path is required for type image').toString());
-                    return;
+                    break;
+                }
+                /**
+                 * line.css is unsupported, throw an error if user sets css
+                 */
+                if (line.css) {
+                    window.close();
+                    reject(new Error('`options.css` in {css: ' + line.css.toString() + '} is no longer supported. Please use `options.style` instead. Example: {style: {fontSize: 12}}'));
+                    break;
+                }
+                /**
+                 * line.style is no longer a string but an object, throw and error if a use still sets a string
+                 *
+                 */
+                if (!!line.style && typeof line.style !== "object") {
+                    window.close();
+                    reject(new Error('`options.styles` at "' + line.style + '" should be an object. Example: {style: {fontSize: 12}}'));
+                    break;
                 }
                 yield sendIpcMsg('render-line', window.webContents, { line, lineIndex })
                     .then((result) => {
@@ -134,10 +145,10 @@ class PosPrinter {
                     reject(error);
                     return;
                 });
-            }));
+            }
             // when the render process is done rendering the page, resolve
             resolve({ message: 'page-rendered' });
-        });
+        }));
     }
 }
 exports.PosPrinter = PosPrinter;
