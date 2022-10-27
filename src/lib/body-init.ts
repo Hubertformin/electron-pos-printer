@@ -3,17 +3,16 @@
  */
 
 
-import {PosPrintPosition, PrintDataStyle} from "../models";
+import {PrintDataStyle} from "../models";
 
 const fs = require('fs');
 const path = require('path');
 const ipcRender = require('electron').ipcRenderer;
-const request = require('request').defaults({ encoding: null });
 const QRCode = require('qrcode');
 const JsBarcode = require("jsbarcode");
 
 const body = document.getElementById('main') as HTMLElement;
-let barcodeNumber = 0;
+
 const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
     'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
 
@@ -238,6 +237,7 @@ function generatePageText(arg) {
  * @function
  * @name generateTableCell
  * @param arg {pass argument of type PosPrintData}
+ * @param type {string}
  * @description used for type text, used to generate type text
  * */
 function generateTableCell(arg, type = 'td'): HTMLElement {
@@ -255,7 +255,7 @@ function generateTableCell(arg, type = 'td'): HTMLElement {
  * @function
  * @name renderImageToPage
  * @param arg {pass argument of type PosPrintData}
- * @description get image from path and return it as an html img
+ * @description get image from path and return it as a html img
  * */
 function renderImageToPage(arg): Promise<HTMLElement> {
     return new Promise(async (resolve, reject) => {
@@ -305,20 +305,6 @@ function renderImageToPage(arg): Promise<HTMLElement> {
         img_con.prepend(img);
         resolve(img_con);
     });
-}
-
-
-/**
- * Determine whether a file exists at the given `path`.
- *
- * @param {String} path
- *
- * @returns {Boolean}
- */
-async function isFile(path) {
-    const stats = await fs.stat(path);
-
-    return stats.isFile()
 }
 
 function isBase64(str) {
@@ -375,14 +361,3 @@ function generateQRCode(elementId: string, { value, height = 15, width = 1}) {
     })
 }
 
-function getPositionStyle(position?: PosPrintPosition): string {
-    switch (position) {
-        case 'left':
-        default:
-            return 'flex-start';
-        case 'center':
-            return position;
-        case 'right':
-            return 'flex-right';
-    }
-}

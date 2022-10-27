@@ -15,11 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const path = require('path');
 const ipcRender = require('electron').ipcRenderer;
-const request = require('request').defaults({ encoding: null });
 const QRCode = require('qrcode');
 const JsBarcode = require("jsbarcode");
 const body = document.getElementById('main');
-let barcodeNumber = 0;
 const image_format = ['apng', 'bmp', 'gif', 'ico', 'cur', 'jpeg', 'jpg', 'jpeg', 'jfif', 'pjpeg',
     'pjp', 'png', 'svg', 'tif', 'tiff', 'webp'];
 ipcRender.on('body-init', function (event, arg) {
@@ -240,6 +238,7 @@ function generatePageText(arg) {
  * @function
  * @name generateTableCell
  * @param arg {pass argument of type PosPrintData}
+ * @param type {string}
  * @description used for type text, used to generate type text
  * */
 function generateTableCell(arg, type = 'td') {
@@ -254,7 +253,7 @@ function generateTableCell(arg, type = 'td') {
  * @function
  * @name renderImageToPage
  * @param arg {pass argument of type PosPrintData}
- * @description get image from path and return it as an html img
+ * @description get image from path and return it as a html img
  * */
 function renderImageToPage(arg) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -298,19 +297,6 @@ function renderImageToPage(arg) {
         img_con.prepend(img);
         resolve(img_con);
     }));
-}
-/**
- * Determine whether a file exists at the given `path`.
- *
- * @param {String} path
- *
- * @returns {Boolean}
- */
-function isFile(path) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const stats = yield fs.stat(path);
-        return stats.isFile();
-    });
 }
 function isBase64(str) {
     return Buffer.from(str, 'base64').toString('base64') === str;
@@ -356,15 +342,4 @@ function generateQRCode(elementId, { value, height = 15, width = 1 }) {
             resolve('success!');
         });
     });
-}
-function getPositionStyle(position) {
-    switch (position) {
-        case 'left':
-        default:
-            return 'flex-start';
-        case 'center':
-            return position;
-        case 'right':
-            return 'flex-right';
-    }
 }

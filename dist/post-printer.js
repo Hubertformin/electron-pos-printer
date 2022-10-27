@@ -13,11 +13,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PosPrinter = void 0;
-const path = require("path");
 if (process.type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
 }
-const { BrowserWindow, ipcMain } = require('electron');
+const electron_1 = require("electron");
 // ipcMain.on('pos-print', (event, arg)=> {
 //     const {data, options} = JSON.parse(arg);
 //     PosPrinter.print(data, options).then((arg)=>{
@@ -55,7 +54,7 @@ class PosPrinter {
                 }, timeOutPerline * data.length + 200);
             }
             // open electron window
-            let mainWindow = new BrowserWindow(Object.assign(Object.assign({}, formatPageSize(options.pageSize)), { show: !!options.preview, webPreferences: {
+            let mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, formatPageSize(options.pageSize)), { show: !!options.preview, webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: false
                 } }));
@@ -69,7 +68,7 @@ class PosPrinter {
                 slashes: true,
                 // baseUrl: 'dist'
             }));*/
-            mainWindow.loadFile(path.resolve(__dirname, 'pos.html'));
+            mainWindow.loadFile(options.pathTemplate || (__dirname + '/pos.html'));
             mainWindow.webContents.on('did-finish-load', () => __awaiter(this, void 0, void 0, function* () {
                 // get system printers
                 // const system_printers = mainWindow.webContents.getPrinters();
@@ -88,13 +87,7 @@ class PosPrinter {
                 return PosPrinter.renderPrintDocument(mainWindow, data)
                     .then(() => {
                     if (!options.preview) {
-                        mainWindow.webContents.print({
-                            silent: !!options.silent,
-                            printBackground: true,
-                            deviceName: options.printerName,
-                            copies: (options === null || options === void 0 ? void 0 : options.copies) || 1,
-                            pageSize: (options === null || options === void 0 ? void 0 : options.pageSize) || 'Letter'
-                        }, (arg, err) => {
+                        mainWindow.webContents.print(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ silent: !!options.silent, printBackground: true, deviceName: options.printerName, copies: (options === null || options === void 0 ? void 0 : options.copies) || 1, pageSize: (options === null || options === void 0 ? void 0 : options.pageSize) || 'Letter' }, (options.header && { color: options.header })), (options.footer && { color: options.footer })), (options.color && { color: options.color })), (options.printBackground && { printBackground: options.printBackground })), (options.margins && { margins: options.margins })), (options.landscape && { landscape: options.landscape })), (options.scaleFactor && { scaleFactor: options.scaleFactor })), (options.pagesPerSheet && { pagesPerSheet: options.pagesPerSheet })), (options.collate && { collate: options.collate })), (options.pageRanges && { pageRanges: options.pageRanges })), (options.duplexMode && { duplexMode: options.duplexMode })), (options.dpi && { dpi: options.dpi })), (arg, err) => {
                             // console.log(arg, err);
                             if (err) {
                                 window_print_error = err;
@@ -155,7 +148,7 @@ exports.PosPrinter = PosPrinter;
  */
 function sendIpcMsg(channel, webContents, arg) {
     return new Promise((resolve, reject) => {
-        ipcMain.once(`${channel}-reply`, function (event, result) {
+        electron_1.ipcMain.once(`${channel}-reply`, function (event, result) {
             if (result.status) {
                 resolve(result);
             }

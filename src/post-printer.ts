@@ -3,14 +3,13 @@
  */
 
 import { PosPrintData, PosPrintOptions} from "./models";
-import * as path from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
 }
 
 
-const {BrowserWindow, ipcMain} = require('electron');
+import {BrowserWindow, ipcMain} from 'electron';
 // ipcMain.on('pos-print', (event, arg)=> {
 //     const {data, options} = JSON.parse(arg);
 //     PosPrinter.print(data, options).then((arg)=>{
@@ -36,7 +35,7 @@ export class PosPrinter {
             }
             // else
             let printedState = false; // If the job has been printer or not
-            let window_print_error = null; // The error returned if the printing fails
+            let window_print_error: any = null; // The error returned if the printing fails
             let timeOutPerline = options.timeOutPerLine ? options.timeOutPerLine : 400;
             if (!options.preview || !options.silent) {
                 setTimeout(() => {
@@ -90,7 +89,19 @@ export class PosPrinter {
                                 printBackground: true,
                                 deviceName: options.printerName,
                                 copies: options?.copies || 1,
-                                pageSize: options?.pageSize || 'Letter'
+                                pageSize: options?.pageSize || 'Letter',
+                                ...(options.header && { color: options.header}),
+                                ...(options.footer && { color: options.footer}),
+                                ...(options.color && { color: options.color}),
+                                ...(options.printBackground && { printBackground: options.printBackground}),
+                                ...(options.margins && { margins: options.margins}),
+                                ...(options.landscape && { landscape: options.landscape}),
+                                ...(options.scaleFactor && { scaleFactor: options.scaleFactor}),
+                                ...(options.pagesPerSheet && { pagesPerSheet: options.pagesPerSheet}),
+                                ...(options.collate && { collate: options.collate}),
+                                ...(options.pageRanges && { pageRanges: options.pageRanges}),
+                                ...(options.duplexMode && { duplexMode: options.duplexMode}),
+                                ...(options.dpi && { dpi: options.dpi}),
                             }, (arg, err) => {
                                 // console.log(arg, err);
                                 if (err) {

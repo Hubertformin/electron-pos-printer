@@ -17,7 +17,7 @@
 
 ## 1.1.3
 ### Changed
-- Fixed early time outs
+- Fixed early times outs
 
 ## 1.2.0
 ### Added
