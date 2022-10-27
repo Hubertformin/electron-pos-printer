@@ -12,6 +12,9 @@ requires electron >= 6.x.x.
 $ npm install electron-pos-printer
 $ yarn add electron-pos-printer
 ```
+### Demo
+Check out this [Demo](https://github.com/fssonca/electron-printer ) by [fssonca](https://github.com/fssonca)
+
 ### Usage
 #### In main process
 ```js
@@ -21,13 +24,6 @@ const {PosPrinter} = require("electron-pos-printer");
 ```js
 const {PosPrinter} = require('electron').remote.require("electron-pos-printer");
 ```
-### Demo
-Check out this [Demo](https://github.com/fssonca/electron-printer ) by [fssonca](https://github.com/fssonca) 
-
-> ## Important
-> The `css` property is no longer supported, instead use style. <br /> 
-> Example: `style: {fontWeight: "700", textAlign: 'center', fontSize: "24px"}`
-
 ```js
 const {PosPrinter} = require("electron-pos-printer");
 const path = require("path");
@@ -230,6 +226,9 @@ PosPrinter.print(data, options)
 | silent | (boolean) To print silently without printer selection pop-up, default is true | 
 | pageSize | (SizeOptions) Specify the width and height of the print out page |
 
+> ## Important
+> The `css` property is no longer supported, instead use style. <br />
+> Example: `style: {fontWeight: "700", textAlign: 'center', fontSize: "24px"}`
 
 
 ## The Print data object
