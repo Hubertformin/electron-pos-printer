@@ -9,6 +9,7 @@
     <style>
         @page {
             margin: 0;
+            page-break-before: always;
         }
         body {
             font-size: 12px;
@@ -46,9 +47,10 @@
 </head>
 <body>
 <section id="main"></section>
-<script src="libs/jquery.min.js"></script>
-<script src="libs/jsbarcode.min.js"></script>
-<script src="libs/qrcode.min.js"></script>
-<script src="libs/body-init.js"></script>
+<!--<script src="libs/jquery.min.js"></script>-->
+<!--<script src="libs/jsbarcode.min.js"></script>-->
+<!--<script src="libs/qrcode.min.js"></script>-->
+<script>let exports = {};</script>
+<script type="module" src="lib/body-init.js"></script>
 </body>
 </html>

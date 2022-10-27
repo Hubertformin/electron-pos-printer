@@ -6,10 +6,10 @@ module.exports = {
   mode: "production",
   entry: {
     app: [
-        path.resolve(__dirname, 'src/libs/jquery.min.js'),
-        path.resolve(__dirname, 'src/libs/jsbarcode.min.js'),
-        path.resolve(__dirname, 'src/libs/qrcode.min.js'),
-        path.resolve(__dirname, 'src/libs/body-init.js')
+        // path.resolve(__dirname, 'src/libs/jquery.min.js'),
+        // path.resolve(__dirname, 'src/libs/jsbarcode.min.js'),
+        // path.resolve(__dirname, 'src/libs/qrcode.min.js'),
+        path.resolve(__dirname, 'src/lib/body-init.ts')
     ]
   },
   output: {

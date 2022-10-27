@@ -15,6 +15,6 @@ export declare class PosPrinter {
      * @Return {Promise}
      * @description Render the print data in the render process
      *
-    */
+     */
     private static renderPrintDocument;
 }
