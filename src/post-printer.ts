@@ -5,7 +5,7 @@ import { PosPrintData, PosPrintOptions} from "./models";
 import {BrowserWindow, ipcMain} from 'electron';
 
 if ((process as any).type == 'renderer') {
-    throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in render process');
+    throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
 }
 
 /**
@@ -13,9 +13,10 @@ if ((process as any).type == 'renderer') {
  * **/
 export class PosPrinter {
     /**
-     * @Method: Print object
-     * @Param arg {any}
-     * @Return {Promise}
+     * @method: Print object
+     * @param data {PosPrintData[]}
+     * @param options {PosPrintOptions}
+     * @return {Promise}
      */
     public static print(data: PosPrintData[], options: PosPrintOptions): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -26,7 +27,20 @@ export class PosPrinter {
             // else
             let printedState = false; // If the job has been printer or not
             let window_print_error: any = null; // The error returned if the printing fails
-            let timeOut = options.timeOutPerLine ? options.timeOutPerLine * data.length + 200 : 400;
+            let timeOut = options.timeOutPerLine ? (options.timeOutPerLine * data.length + 200) : (400 * data.length + 200);
+
+            /**
+             * If in live mode i.e. `options.preview` is false & if `options.silent` is false
+             * Check after a timeOut if the print data has been rendered and printed,
+             * If the data is rendered & printer, printerState will be set to true.
+             *
+             * This is done because we don't want the printing process to hang, so after a specific time, we check if the
+             * printing was completed and resolve/reject the promise.
+             *
+             * The printing process can hang (i.e. the print promise never gets resolved) if the process is trying to
+             * send a print job to a printer that is not connected.
+             *
+             */
             if (!options.preview || !options.silent) {
                 setTimeout(() => {
                     if (!printedState) {
@@ -36,7 +50,12 @@ export class PosPrinter {
                     }
                 }, timeOut);
             }
-            // open electron window
+            /**
+             * Create Browser window
+             * This window is the preview window, and it loads the data to be printer (in html)
+             * The width and height of this window can be customized by the user
+             *
+             */
             let mainWindow = new BrowserWindow({
                 ...formatPageSize(options.pageSize),
                 show: !!options.preview,
@@ -45,17 +64,14 @@ export class PosPrinter {
                     contextIsolation: false
                 }
             });
-            // mainWindow
+
+            // If the mainWindow is closed, reset the `mainWindow` var to null
             mainWindow.on('closed', () => {
                 (mainWindow as any) = null;
             });
-            /*mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'print.html'),
-                protocol: 'file:',
-                slashes: true,
-                // baseUrl: 'dist'
-            }));*/
+
             mainWindow.loadFile(options.pathTemplate || (__dirname + '/pos.html'));
+
             mainWindow.webContents.on('did-finish-load', async () => {
                 // get system printers
                 // const system_printers = mainWindow.webContents.getPrinters();
@@ -65,10 +81,10 @@ export class PosPrinter {
                 //     reject(new Error(options.printerName + ' not found. Check if this printer was added to your computer or try updating your drivers').toString());
                 //     return;
                 // }
-                // else start initialize render prcess page
+                // else start initialize render process page
                 await sendIpcMsg('body-init', mainWindow.webContents, options);
                 /**
-                 * Render print data as html in the mainwindow render process
+                 * Render print data as html in the mainWindow render process
                  *
                  */
                 return PosPrinter.renderPrintDocument(mainWindow, data)
@@ -105,7 +121,7 @@ export class PosPrinter {
                                 mainWindow.close();
                             })
                         } else {
-                            resolve({complete: true});
+                            resolve({complete: true, data, options});
                         }
                     })
                     .catch(err => reject(err));
@@ -171,7 +187,7 @@ export class PosPrinter {
 
 /**
  * @function sendMsg
- * @description Sends messages to the render process to render the data specified in the PostPrintDate interface and recieves a status of true
+ * @description Sends messages to the render process to render the data specified in the PostPrintDate interface and receives a status of true
  *
  */
 function sendIpcMsg(channel: any, webContents: any, arg: any) {

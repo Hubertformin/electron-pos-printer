@@ -1,5 +1,8 @@
-/*
- * Copyright (c) 2019. Author Hubert Formin <hformin@gmail.com>
+/**
+ * Copyright (c) 2022. Author Hubert Formin <hformin@gmail.com>.
+ *     This file is called the the render process main html file in lib/pos.html
+ *     This page renders data into the view.
+ *     Render events are sent from the main process, this process on successful render replies with success of failure event
  */
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +14,9 @@ const JsBarcode = require("jsbarcode");
 type PageElement = HTMLElement | HTMLDivElement | HTMLImageElement;
 
 const body = document.getElementById('main') as HTMLElement;
-
+/**
+ * Initialize container in html view, by setting the width and margins specified in the PosPrinter options
+ */
 ipcRender.on('body-init', function (event, arg) {
     body.style.width = arg?.width || '100%';
     body.style.margin = arg?.margin ||  0;
@@ -19,10 +24,10 @@ ipcRender.on('body-init', function (event, arg) {
     event.sender.send('body-init-reply', {status: true, error: null});
 });
 /**
- * Listen to render request form the main process,
+ * Listen to render event form the main process,
  * Once the main process sends line data, render this data in the web page
  */
-ipcRender.on('render-line', function (event, arg) {
+ipcRender.on('render-line', (event, arg) => {
     renderDataToHTML(event, arg);
 });
 

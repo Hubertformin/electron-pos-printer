@@ -4,8 +4,8 @@
 ![Issues](https://img.shields.io/github/issues/Hubertformin/electron-pos-printer)
 
 # Electron-pos-printer
-An electron printer plugin, currently supports 58mm, 
-requires electron >= 6.x.x.
+A customizable electron.js printing plugin. This plugin is specifically designed for thermal receipt printers.
+It supports 58mm - 80mm. It requires a version of electron >= 6.x.x.
 
 ### Installation
 ```bash
@@ -24,6 +24,12 @@ const {PosPrinter} = require("electron-pos-printer");
 ```js
 const {PosPrinter} = require('electron').remote.require("electron-pos-printer");
 ```
+Electron >= `v10.x.x`
+```js
+const {PosPrinter} = require('@electron/remote').remote.require("electron-pos-printer");
+```
+
+#### Example code
 ```js
 const {PosPrinter} = require("electron-pos-printer");
 const path = require("path");
@@ -215,28 +221,28 @@ PosPrinter.print(data, options)
 ```
 
 ## Printing options
-| Options        | Required |         Type         | Description                                                                                                                                                                                                                               |
-|----------------|:--------:|:--------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| printerName    |    No    |       `string`       | the printer's name. If not set, the system's default printer will be used.                                                                                                                                                                | 
-| copies         |    No    |       `number`       | number of copies to print                                                                                                                                                                                                                 |
-| preview        |    No    |      `boolean`       | preview in a window, default is false                                                                                                                                                                                                     |
-| width          |    No    |       `string`       | width of a page                                                                                                                                                                                                                           |
-| margin         |    No    |       `string`       | margin of a page, css values can be used                                                                                                                                                                                                  | 
-| timeOutPerLine |    No    |       `number`       | timeout per line, default is 200                                                                                                                                                                                                          | 
-| silent         |    No    |      `boolean`       | To print silently without printer selection pop-up, default is true                                                                                                                                                                       | 
-| pageSize       |    No    |    `SizeOptions`     | Specify the width and height of the print out page                                                                                                                                                                                        |
-| pathTemplate   |    No    |       `string`       | Path to custom html template. Can be used for custom print styles.                                                                                                                                                                        | 
-| header         |    No    |       `string`       | string to be printed as page header.                                                                                                                                                                                                      | 
-| footer         |    No    |       `string`       | string to be printed as page footer.                                                                                                                                                                                                      | 
-| margins        |    No    |       `object`       | Page margins. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                  | 
-| landscape      |    No    |      `boolean`       | Whether the page should be printed in landscape mode. Default is `false`.                                                                                                                                                                 | 
-| scaleFactor    |    No    |       `number`       | The scale factor of the web page.                                                                                                                                                                                                         | 
-| pagesPerSheet  |    No    |       `number`       | The number of pages to print per page sheet.                                                                                                                                                                                              | 
-| collate        |    No    |      `boolean`       | Whether the page should be collated.                                                                                                                                                                                                      | 
-| pageRanges     |    No    |      `object[]`      | The page range to print. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                       | 
-| duplexMode     |    No    |       `string`       | Set the duplex mode of the printed web page. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                   | 
+| Options        | Required | Type                 | Description                                                                                                                                                                                                                               |
+|----------------|:--------:|:---------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| printerName    |    No    | `string`             | the printer's name. If not set, the system's default printer will be used.                                                                                                                                                                | 
+| copies         |    No    | `number`             | number of copies to print                                                                                                                                                                                                                 |
+| preview        |    No    | `boolean`            | preview in a window, default is false                                                                                                                                                                                                     |
+| width          |    No    | `string`             | width of a page                                                                                                                                                                                                                           |
+| margin         |    No    | `string`             | margin of a page, css values can be used                                                                                                                                                                                                  | 
+| timeOutPerLine |    No    | `number`             | timeout per line, default is 200                                                                                                                                                                                                          | 
+| silent         |    No    | `boolean`            | To print silently without printer selection pop-up, default is true                                                                                                                                                                       | 
+| pageSize       |    No    | `SizeOptions`        | Specify the width and height of the print out page                                                                                                                                                                                        |
+| pathTemplate   |    No    | `string`             | Path to custom html template. Can be used for custom print styles.                                                                                                                                                                        | 
+| header         |    No    | `string`             | string to be printed as page header.                                                                                                                                                                                                      | 
+| footer         |    No    | `string`             | string to be printed as page footer.                                                                                                                                                                                                      | 
+| margins        |    No    | `object`             | Page margins. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                  | 
+| landscape      |    No    | `boolean`            | Whether the page should be printed in landscape mode. Default is `false`.                                                                                                                                                                 | 
+| scaleFactor    |    No    | `number`             | The scale factor of the web page.                                                                                                                                                                                                         | 
+| pagesPerSheet  |    No    | `number`             | The number of pages to print per page sheet.                                                                                                                                                                                              | 
+| collate        |    No    | `boolean`            | Whether the page should be collated.                                                                                                                                                                                                      | 
+| pageRanges     |    No    | `object[]`           | The page range to print. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                       | 
+| duplexMode     |    No    | `string`             | Set the duplex mode of the printed web page. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                   | 
 | pageSize       |    No    | `string` or `object` | Specify page size of the printed document. Can be A3, A4, A5, Legal, Letter, Tabloid or an Object containing height and width. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback) | 
-| dpi            |    No    |       `object`       | [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                                | 
+| dpi            |    No    | `object`             | [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                                | 
 
 > ## Important
 > The `css` property is no longer supported, use style instead of css. <br />
@@ -244,23 +250,23 @@ PosPrinter.print(data, options)
 
 
 ## The Print data object
-| Property         |                   Type                   | Description                                                                               |
-|------------------|:----------------------------------------:|:------------------------------------------------------------------------------------------|
-| type             |                 `string`                 | `text`, `qrCode`, `barCode`, `image`, `table` // type `text` can be an html string        |
-| value            |                 `string`                 | value of the current row                                                                  |
-| height           |                 `number`                 | applicable to type barCode and qrCode                                                     |
-| width            |                 `number`                 | applicable to type barCode and qrCode                                                     |
-| style            |             `PrintDataStyle`             | add css styles to line (jsx syntax) <br />ex: `{fontSize: 12, backgroundColor: '#2196f3}` |
-| displayValue     |                `boolean`                 | display value of barcode below barcode                                                    |
-| position         |                 `string`                 | 'left', 'center', 'right' applicable to types qrCode and image                            |
-| path             |                 `string`                 | Path or url to the image asset                                                            |
-| url              |                 `string`                 | Url to image or a base 64 encoding of image                                               |
-| tableHeader      |   `PosPrintTableField[]` or `string[]`   | the columns to be rendered in the header of the table, works with type table              |
+| Property         | Type                                     | Description                                                                               |
+|------------------|------------------------------------------|:------------------------------------------------------------------------------------------|
+| type             | `string`                                 | `text`, `qrCode`, `barCode`, `image`, `table` // type `text` can be an html string        |
+| value            | `string`                                 | value of the current row                                                                  |
+| height           | `number`                                 | applicable to type barCode and qrCode                                                     |
+| width            | `number`                                 | applicable to type barCode and qrCode                                                     |
+| style            | `PrintDataStyle`                         | add css styles to line (jsx syntax) <br />ex: `{fontSize: 12, backgroundColor: '#2196f3}` |
+| displayValue     | `boolean`                                | display value of barcode below barcode                                                    |
+| position         | `string`                                 | 'left', 'center', 'right' applicable to types qrCode and image                            |
+| path             | `string`                                 | Path or url to the image asset                                                            |
+| url              | `string`                                 | Url to image or a base 64 encoding of image                                               |
+| tableHeader      | `PosPrintTableField[]` or `string[]`     | the columns to be rendered in the header of the table, works with type table              |
 | tableBody        | `PosPrintTableField[][]` or `string[][]` | the columns to be rendered in the body of the table, works with type table                |
-| tableFooter      |   `PosPrintTableField[]` or `string[]`   | the columns to rendered it the footer of the table, works with type table                 |
-| tableHeaderStyle |                 `string`                 | set custom style to the table header                                                      |
-| tableBodyStyle   |                 `string`                 | set custom style to the table body                                                        |
-| tableFooterStyle |                 `string`                 | set custom style to the table footer                                                      |
+| tableFooter      | `PosPrintTableField[]` or `string[]`     | the columns to rendered it the footer of the table, works with type table                 |
+| tableHeaderStyle | `string`                                 | set custom style to the table header                                                      |
+| tableBodyStyle   | `string`                                 | set custom style to the table body                                                        |
+| tableFooterStyle | `string`                                 | set custom style to the table footer                                                      |
 
 ## Author
  - Hubert Formin
