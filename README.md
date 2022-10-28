@@ -4,8 +4,8 @@
 ![Issues](https://img.shields.io/github/issues/Hubertformin/electron-pos-printer)
 
 # Electron-pos-printer
-A customizable electron.js printing plugin. This plugin is specifically designed for thermal receipt printers.
-It supports 58mm - 80mm. It requires a version of electron >= 6.x.x.
+A customizable electron.js printing plugin specifically designed for thermal receipt printers.
+It supports 58mm - 80mm. It currently supports versions of electron >= 6.x.x
 
 ### Installation
 ```bash
@@ -232,8 +232,8 @@ PosPrinter.print(data, options)
 | silent         |    No    | `boolean`            | To print silently without printer selection pop-up, default is true                                                                                                                                                                       | 
 | pageSize       |    No    | `SizeOptions`        | Specify the width and height of the print out page                                                                                                                                                                                        |
 | pathTemplate   |    No    | `string`             | Path to custom html template. Can be used for custom print styles.                                                                                                                                                                        | 
-| header         |    No    | `string`             | string to be printed as page header.                                                                                                                                                                                                      | 
-| footer         |    No    | `string`             | string to be printed as page footer.                                                                                                                                                                                                      | 
+| header         |    No    | `string`             | Text to be printed as page header.                                                                                                                                                                                                        | 
+| footer         |    No    | `string`             | Text to be printed as page footer.                                                                                                                                                                                                        | 
 | margins        |    No    | `object`             | Page margins. [See electron docs](https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback)                                                                                                                  | 
 | landscape      |    No    | `boolean`            | Whether the page should be printed in landscape mode. Default is `false`.                                                                                                                                                                 | 
 | scaleFactor    |    No    | `number`             | The scale factor of the web page.                                                                                                                                                                                                         | 
@@ -253,20 +253,20 @@ PosPrinter.print(data, options)
 | Property         | Type                                     | Description                                                                               |
 |------------------|------------------------------------------|:------------------------------------------------------------------------------------------|
 | type             | `string`                                 | `text`, `qrCode`, `barCode`, `image`, `table` // type `text` can be an html string        |
-| value            | `string`                                 | value of the current row                                                                  |
-| height           | `number`                                 | applicable to type barCode and qrCode                                                     |
-| width            | `number`                                 | applicable to type barCode and qrCode                                                     |
-| style            | `PrintDataStyle`                         | add css styles to line (jsx syntax) <br />ex: `{fontSize: 12, backgroundColor: '#2196f3}` |
-| displayValue     | `boolean`                                | display value of barcode below barcode                                                    |
-| position         | `string`                                 | 'left', 'center', 'right' applicable to types qrCode and image                            |
+| value            | `string`                                 | Value of the current row                                                                  |
+| height           | `number`                                 | Applicable to type barCode and qrCode                                                     |
+| width            | `number`                                 | Applicable to type barCode and qrCode                                                     |
+| style            | `PrintDataStyle`                         | Add css styles to line (jsx syntax) <br />ex: `{fontSize: 12, backgroundColor: '#2196f3}` |
+| displayValue     | `boolean`                                | Display value of barcode below barcode                                                    |
+| position         | `string`                                 | `left`, `center`, `right` applicable to types qrCode and image                            |
 | path             | `string`                                 | Path or url to the image asset                                                            |
 | url              | `string`                                 | Url to image or a base 64 encoding of image                                               |
-| tableHeader      | `PosPrintTableField[]` or `string[]`     | the columns to be rendered in the header of the table, works with type table              |
-| tableBody        | `PosPrintTableField[][]` or `string[][]` | the columns to be rendered in the body of the table, works with type table                |
-| tableFooter      | `PosPrintTableField[]` or `string[]`     | the columns to rendered it the footer of the table, works with type table                 |
-| tableHeaderStyle | `string`                                 | set custom style to the table header                                                      |
-| tableBodyStyle   | `string`                                 | set custom style to the table body                                                        |
-| tableFooterStyle | `string`                                 | set custom style to the table footer                                                      |
+| tableHeader      | `PosPrintTableField[]` or `string[]`     | The columns to be rendered in the header of the table, works with type table              |
+| tableBody        | `PosPrintTableField[][]` or `string[][]` | The columns to be rendered in the body of the table, works with type table                |
+| tableFooter      | `PosPrintTableField[]` or `string[]`     | The columns to rendered it the footer of the table, works with type table                 |
+| tableHeaderStyle | `string`                                 | Set custom style to the table header                                                      |
+| tableBodyStyle   | `string`                                 | Set custom style to the table body                                                        |
+| tableFooterStyle | `string`                                 | Set custom style to the table footer                                                      |
 
 ## Author
  - Hubert Formin
