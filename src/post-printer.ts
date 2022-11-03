@@ -57,7 +57,7 @@ export class PosPrinter {
              *
              */
             let mainWindow = new BrowserWindow({
-                ...formatPageSize(options.pageSize),
+                ...parsePageSize(options.pageSize),
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,        // For electron >= 4.0.0
@@ -133,7 +133,7 @@ export class PosPrinter {
      * @Method
      * @Param data {any[]}
      * @Return {Promise}
-     * @description Render the print data in the render process
+     * @description Render the print data in the render process pos.html
      *
      */
     private static renderPrintDocument(window: any, data: PosPrintData[]): Promise<any> {
@@ -204,7 +204,7 @@ function sendIpcMsg(channel: any, webContents: any, arg: any) {
 }
 
 
-function formatPageSize(pageSize?: any): { width: number, height: number } {
+function parsePageSize(pageSize?: any): { width: number, height: number } {
     let width = 220, height = 1200;
     if(typeof pageSize == "object") {
         width = pageSize.width;

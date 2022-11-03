@@ -269,18 +269,3 @@ PosPrinter.print(data, options)
 | tableHeaderStyle | `string`                                 | Set a custom style to the table header                                                    |
 | tableBodyStyle   | `string`                                 | Set a custom style to the table body                                                      |
 | tableFooterStyle | `string`                                 | Set a custom style to the table footer                                                    |
-
-## Author
- - Hubert Formin
- - hformin@gmail.com
-
-### Connect with me
-<a href="https://www.linkedin.com/in/hformin/" target="_blank">
-<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"  style="margin-bottom: 5px;" />
-</a> 
-<a href="https://www.instagram.com/ui.hformin/" target="_blank">
-<img src="https://img.shields.io/badge/instagram-%ff5851db.svg?color=f02b9a&style=for-the-badge&logo=instagram&logoColor=white" t=instagram style="margin-bottom: 5px;" />
-</a>
-<a href="https://www.twitter.com/Hformin/" target="_blank">
-<img src="https://img.shields.io/badge/Twitter-00ACEE?style=for-the-badge&logo=twitter&logoColor=white"  style="margin-bottom: 5px;" />
-</a> 
