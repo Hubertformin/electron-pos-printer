@@ -4,6 +4,7 @@
  *     This page renders data into the view.
  *     Render events are sent from the main process, this process on successful render replies with success of failure event
  */
+import './index.css';
 import {applyElementStyles, generatePageText, generateQRCode, generateTableCell, renderImageToPage} from "./utils";
 
 const ipcRender = require('electron').ipcRenderer;
