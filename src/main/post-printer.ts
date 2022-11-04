@@ -3,6 +3,7 @@
  */
 import { PosPrintData, PosPrintOptions} from "./models";
 import {BrowserWindow, ipcMain} from 'electron';
+import { join } from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
@@ -70,7 +71,7 @@ export class PosPrinter {
                 (mainWindow as any) = null;
             });
 
-            mainWindow.loadFile(options.pathTemplate || (__dirname + '/index.html'));
+            mainWindow.loadFile(options.pathTemplate || join(__dirname, "renderer/index.html"));
 
             mainWindow.webContents.on('did-finish-load', async () => {
                 // get system printers
@@ -192,6 +193,7 @@ export class PosPrinter {
  */
 function sendIpcMsg(channel: any, webContents: any, arg: any) {
     return new Promise((resolve, reject) => {
+        // @ts-ignore
         ipcMain.once(`${channel}-reply`, function (event, result) {
             if (result.status) {
                 resolve(result);

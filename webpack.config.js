@@ -1,20 +1,64 @@
 const path = require('path');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const nodeExternals = require('webpack-node-externals');
+const TerserPlugin = require("terser-webpack-plugin");
+const BundleDeclarationsWebpackPlugin = require("bundle-declarations-webpack-plugin");
 
-module.exports = {
-  target: "node",
-  mode: "production",
-  entry: {
-    app: [
-        // path.resolve(__dirname, 'src/libs/jquery.min.js'),
-        // path.resolve(__dirname, 'src/libs/jsbarcode.min.js'),
-        // path.resolve(__dirname, 'src/libs/qrcode.min.js'),
-        path.resolve(__dirname, 'src/lib/body-init.ts')
-    ]
-  },
-  output: {
-    path: path.resolve(__dirname, "./dist/libs"),
-    filename: "58mm.bundle.js"
-  },
-  externals: [nodeExternals()],
-};
+let common_config = {
+    target: "node",
+    mode: "production",
+    module: {
+        rules: [
+            {
+                test: /\.ts?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()],
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
+    },
+    externals: nodeExternals(),
+    devtool: 'source-map'
+}
+
+module.exports = [
+    Object.assign({}, common_config, {
+        target: 'electron-main',
+        entry: {
+            "index": path.resolve(__dirname, 'src/main/index.ts')
+        },
+        output: {
+            path: path.resolve(__dirname, "./dist"),
+            library: "electronPosPrinter",
+            filename: "[name].js",
+            libraryTarget: "umd",
+            umdNamedDefine: true,
+        },
+        plugins: [
+            new BundleDeclarationsWebpackPlugin(),
+        ],
+
+    }),
+    Object.assign({}, common_config, {
+        target: 'electron-renderer',
+        entry:  {
+            "renderer": path.resolve(__dirname, 'src/renderer/renderer.ts')
+        },
+        output: {
+            path: path.resolve(__dirname, "./dist/renderer"),
+            filename: "[name].js"
+        },
+        plugins: [
+            new HtmlWebpackPlugin({
+                title: 'Print Preview',
+                template: 'src/renderer/index.html'
+            })
+        ],
+    })
+];
