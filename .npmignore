@@ -4,5 +4,12 @@ demo/
 test/
 src/
 
-# Ignore webpack config
-webpack.config.js
+**/tsconfig.json
+**/webpack.config.js
+node_modules/
+
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+yarn.lock
+.travis.yml

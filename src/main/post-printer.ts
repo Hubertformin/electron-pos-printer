@@ -3,6 +3,7 @@
  */
 import { PosPrintData, PosPrintOptions} from "./models";
 import {BrowserWindow, ipcMain} from 'electron';
+import { join } from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
@@ -57,7 +58,7 @@ export class PosPrinter {
              *
              */
             let mainWindow = new BrowserWindow({
-                ...formatPageSize(options.pageSize),
+                ...parsePageSize(options.pageSize),
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,        // For electron >= 4.0.0
@@ -70,7 +71,7 @@ export class PosPrinter {
                 (mainWindow as any) = null;
             });
 
-            mainWindow.loadFile(options.pathTemplate || (__dirname + '/pos.html'));
+            mainWindow.loadFile(options.pathTemplate || join(__dirname, "renderer/index.html"));
 
             mainWindow.webContents.on('did-finish-load', async () => {
                 // get system printers
@@ -133,7 +134,7 @@ export class PosPrinter {
      * @Method
      * @Param data {any[]}
      * @Return {Promise}
-     * @description Render the print data in the render process
+     * @description Render the print data in the render process index.html
      *
      */
     private static renderPrintDocument(window: any, data: PosPrintData[]): Promise<any> {
@@ -192,6 +193,7 @@ export class PosPrinter {
  */
 function sendIpcMsg(channel: any, webContents: any, arg: any) {
     return new Promise((resolve, reject) => {
+        // @ts-ignore
         ipcMain.once(`${channel}-reply`, function (event, result) {
             if (result.status) {
                 resolve(result);
@@ -204,7 +206,7 @@ function sendIpcMsg(channel: any, webContents: any, arg: any) {
 }
 
 
-function formatPageSize(pageSize?: any): { width: number, height: number } {
+function parsePageSize(pageSize?: any): { width: number, height: number } {
     let width = 220, height = 1200;
     if(typeof pageSize == "object") {
         width = pageSize.width;
