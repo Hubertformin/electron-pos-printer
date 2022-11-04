@@ -271,7 +271,7 @@ PosPrinter.print(data, options)
 | tableFooterStyle | `string`                                 | Set a custom style to the table footer                                                    |
 
 ## Contributors
-Thanks to our [contributors][contributors-href] 🎉👏
+Thanks to our [contributors](https://github.com/Hubertformin/electron-pos-printer/graphs/contributors) 🎉👏
 - [Hubert Formin](https://github.com/Hubertformin)
 - [Sidnei Pacheco](https://github.com/sidneip)
 - [Ulisses Constantini](https://github.com/ulissesc)
