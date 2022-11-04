@@ -269,3 +269,10 @@ PosPrinter.print(data, options)
 | tableHeaderStyle | `string`                                 | Set a custom style to the table header                                                    |
 | tableBodyStyle   | `string`                                 | Set a custom style to the table body                                                      |
 | tableFooterStyle | `string`                                 | Set a custom style to the table footer                                                    |
+
+## Contributors
+Thanks to our [contributors][contributors-href] 🎉👏
+- [Hubert Formin](https://github.com/Hubertformin)
+- [Sidnei Pacheco](https://github.com/sidneip)
+- [Ulisses Constantini](https://github.com/ulissesc)
+- [Famous Ketoma](https://github.com/jfamousket)

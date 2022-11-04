@@ -25,9 +25,7 @@ ipcRender.on('body-init', function (event, arg) {
  * Listen to render event form the main process,
  * Once the main process sends line data, render this data in the web page
  */
-ipcRender.on('render-line', (event, arg) => {
-    renderDataToHTML(event, arg).then(() => console.log('RENDERED VIEW'));
-});
+ipcRender.on('render-line', renderDataToHTML);
 /**
  * @function
  * @name generatePageText

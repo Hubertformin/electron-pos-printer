@@ -29,6 +29,11 @@
     "name": "Hubert Formin",
     "email": "hformin@gmail.com"
   },
+  "contributors": [
+    "Sidnei Pacheco <sidnei.pacheco@seuguru.com.br>",
+    "Ulisses Constantini <ulisses@parseint.com.br>",
+    "Famous Ketoma <git+https://github.com/jfamousket>"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Hubertformin/electron-pos-printer/issues"
