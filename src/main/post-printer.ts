@@ -70,7 +70,7 @@ export class PosPrinter {
                 (mainWindow as any) = null;
             });
 
-            mainWindow.loadFile(options.pathTemplate || (__dirname + '/pos.html'));
+            mainWindow.loadFile(options.pathTemplate || (__dirname + '/index.html'));
 
             mainWindow.webContents.on('did-finish-load', async () => {
                 // get system printers
@@ -133,7 +133,7 @@ export class PosPrinter {
      * @Method
      * @Param data {any[]}
      * @Return {Promise}
-     * @description Render the print data in the render process pos.html
+     * @description Render the print data in the render process index.html
      *
      */
     private static renderPrintDocument(window: any, data: PosPrintData[]): Promise<any> {
