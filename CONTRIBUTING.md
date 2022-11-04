@@ -28,3 +28,13 @@ You are now ready to start doing your changes.
 
 
 ## Development
+The source code lives in the `src` folder. The src folder has two sub-folders, `main` for the main process code
+and `renderer` for the render process code.  <br />
+Run your code with the command `npm start` which creates a demo electron instance. The code in demo folder imports the 
+plugin locally, you can modify the contents of this folder however you want
+
+## Building
+To ensure your code has a valid syntax, please build before you push to github.
+```bash
+npm run build
+```

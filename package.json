@@ -8,10 +8,8 @@
     "test": "mocha",
     "start": "npm run build && npm run demo",
     "demo": "electron ./demo/",
-    "pack": "webpack --config ./webpack.config.js",
-    "build": "tsc",
     "clean": "shx rm -rf dist",
-    "build:prod": "npm run clean && webpack",
+    "build": "npm run clean && webpack",
     "test:all": "mocha -R mocha-jenkins-reporter --timeout 20000 \"./src/test/**/*test-*.js\"",
     "test:one": "mocha --watch -u bdd \"./src/test/**/test-*.js\" --grep \"test-login-form\""
   },
