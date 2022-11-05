@@ -58,7 +58,7 @@ export class PosPrinter {
              *
              */
             const parsedPaperSize = parsePaperSize(options.pageSize);
-            console.log(parsedPaperSize)
+
             let mainWindow = new BrowserWindow({
                 ...parsedPaperSize,
                 show: !!options.preview,
@@ -115,7 +115,7 @@ export class PosPrinter {
                                 ...(options.duplexMode && {duplexMode: options.duplexMode}),
                                 ...(options.dpi && {dpi: options.dpi}),
                             }, (arg, err) => {
-                                // console.log(arg, err);
+
                                 if (err) {
                                     window_print_error = err;
                                     reject(err);

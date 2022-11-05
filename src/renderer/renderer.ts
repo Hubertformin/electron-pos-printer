@@ -51,7 +51,6 @@ async function renderDataToHTML(event, arg) {
                 body.appendChild(img);
                 event.sender.send('render-line-reply', {status: true, error: null});
             } catch (e) {
-                console.log(e)
                 event.sender.send('render-line-reply', {status: false, error: (e as any).toString()});
             }
             return;
