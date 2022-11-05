@@ -26,7 +26,6 @@ let common_config = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     externals: nodeExternals(),
-    devtool: 'source-map'
 }
 
 module.exports = [

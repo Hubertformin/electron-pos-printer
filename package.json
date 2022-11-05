@@ -39,7 +39,6 @@
   "homepage": "https://github.com/Hubertformin/electron-pos-printer#readme",
   "dependencies": {
     "jsbarcode": "^3.11.5",
-    "mini-css-extract-plugin": "^2.6.1",
     "qrcode": "^1.5.1"
   },
   "devDependencies": {
@@ -53,6 +52,7 @@
     "css-minimizer-webpack-plugin": "^4.2.2",
     "electron": "^20.1.1",
     "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.1",
     "mocha": "^6.2.3",
     "shx": "^0.3.4",
     "spectron": "19.0.0",
