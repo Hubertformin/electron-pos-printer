@@ -35,16 +35,12 @@ const {PosPrinter} = require("electron-pos-printer");
 const path = require("path");
 
 const options = {
-   preview: false,               // Preview in window or print
-   width: '170px',               //  width of content body
-   margin: '0 0 0 0',            // margin of content body
-   copies: 1,                    // Number of copies to print
-   printerName: 'XP-80C',        // printerName: string, check with webContent.getPrinters()
-   timeOutPerLine: 400,          // Timeout per line in miliseconds
-   pageSize: {                   // The size of the to-be printed page
-       width: 220,
-       height: 1200 
-   } 
+    preview: false,
+    margin: '0 0 0 0',
+    copies: 1,
+    printerName: 'XP-80C',
+    timeOutPerLine: 400,
+    pageSize: '80mm' // page size
 }
 
 const data = [
@@ -136,12 +132,11 @@ import * as path from "path";
 
 const options: PosPrintOptions = {
    preview: false,
-   width: '170px',       
    margin: '0 0 0 0',    
    copies: 1,
    printerName: 'XP-80C',
    timeOutPerLine: 400,
-   pageSize: { height: 301000, width: 71000 } // page size
+   pageSize: '80mm' // page size
 }
 
 const data: PosPrintData[] = [

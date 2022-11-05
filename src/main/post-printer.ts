@@ -57,8 +57,10 @@ export class PosPrinter {
              * The width and height of this window can be customized by the user
              *
              */
+            const parsedPaperSize = parsePaperSize(options.pageSize);
+            console.log(parsedPaperSize)
             let mainWindow = new BrowserWindow({
-                ...parsePaperSize(options.pageSize),
+                ...parsedPaperSize,
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,        // For electron >= 4.0.0
@@ -99,7 +101,7 @@ export class PosPrinter {
                                 printBackground: !!options.printBackground,
                                 deviceName: options.printerName,
                                 copies: options?.copies || 1,
-                                pageSize: { width: parsePaperSize(options.pageSize).width, height: contentHeight },
+                                pageSize: { width: parsedPaperSize.width, height: contentHeight },
                                 ...(options.header && {color: options.header}),
                                 ...(options.footer && {color: options.footer}),
                                 ...(options.color && {color: options.color}),
@@ -214,22 +216,22 @@ function parsePaperSize(pageSize?: PaperSize | SizeOptions): { width: number, he
     if (typeof pageSize == 'string') {
         switch (pageSize) {
             case "44mm":
-                width = 166.299213;
+                width = 166;
                 break
             case "57mm":
-                width = 215.433071;
+                width = 215;
                 break;
             case "58mm":
-                width = 219.212598;
+                width = 219;
                 break;
             case "76mm":
-                width = 287.244095;
+                width = 287;
                 break;
             case "78mm":
-                width = 294.80315;
+                width = 295;
                 break;
             case "80mm":
-                width = 302.362205;
+                width = 302;
                 break;
         }
     } else if (typeof pageSize == "object") {
