@@ -17,6 +17,7 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
+dist/
 # nyc test coverage
 .nyc_output
 
@@ -50,9 +51,12 @@ typings/
 
 # Output of 'npm pack'
 *.tgz
-
+*.playground.ts
+*.playground.json
 # Yarn Integrity file
 .yarn-integrity
+
+.yarnlock
 
 # dotenv environment variables file
 .env
@@ -61,5 +65,5 @@ typings/
 .next
 
 # test dir
-demo/
 .idea/
+
