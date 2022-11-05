@@ -2,7 +2,9 @@
  * Copyright (c) 2019-2020. Author Hubert Formin <hformin@gmail.com>
  */
 
-export declare type PaperSize = 'A3' | 'A4' | 'A5' | 'Legal' | 'Letter' | 'Tabloid';
+export declare type PageSize = 'A3' | 'A4' | 'A5' | 'Legal' | 'Letter' | 'Tabloid';
+
+export declare type PaperSize = '80mm' | '78mm' | '76mm' | '57mm' | '58mm' | '44mm';
 
 export interface SizeOptions {
     height: number;

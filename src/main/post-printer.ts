@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2019-2022. Author Hubert Formin <hformin@gmail.com>
  */
-import { PosPrintData, PosPrintOptions} from "./models";
+import {PaperSize, PosPrintData, PosPrintOptions, SizeOptions} from "./models";
 import {BrowserWindow, ipcMain} from 'electron';
-import { join } from "path";
+import {join} from "path";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
@@ -58,7 +58,7 @@ export class PosPrinter {
              *
              */
             let mainWindow = new BrowserWindow({
-                ...parsePageSize(options.pageSize),
+                ...parsePaperSize(options.pageSize),
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,        // For electron >= 4.0.0
@@ -90,25 +90,28 @@ export class PosPrinter {
                  */
                 return PosPrinter.renderPrintDocument(mainWindow, data)
                     .then(() => {
+                        // Get the height of content window
+                        const contentHeight = mainWindow.getContentSize()[1];
+
                         if (!options.preview) {
                             mainWindow.webContents.print({
                                 silent: !!options.silent,
-                                printBackground: true,
+                                printBackground: !!options.printBackground,
                                 deviceName: options.printerName,
                                 copies: options?.copies || 1,
-                                pageSize: options?.pageSize || 'Letter',
-                                ...(options.header && { color: options.header}),
-                                ...(options.footer && { color: options.footer}),
-                                ...(options.color && { color: options.color}),
-                                ...(options.printBackground && { printBackground: options.printBackground}),
-                                ...(options.margins && { margins: options.margins}),
-                                ...(options.landscape && { landscape: options.landscape}),
-                                ...(options.scaleFactor && { scaleFactor: options.scaleFactor}),
-                                ...(options.pagesPerSheet && { pagesPerSheet: options.pagesPerSheet}),
-                                ...(options.collate && { collate: options.collate}),
-                                ...(options.pageRanges && { pageRanges: options.pageRanges}),
-                                ...(options.duplexMode && { duplexMode: options.duplexMode}),
-                                ...(options.dpi && { dpi: options.dpi}),
+                                pageSize: { width: parsePaperSize(options.pageSize).width, height: contentHeight },
+                                ...(options.header && {color: options.header}),
+                                ...(options.footer && {color: options.footer}),
+                                ...(options.color && {color: options.color}),
+                                ...(options.printBackground && {printBackground: options.printBackground}),
+                                ...(options.margins && {margins: options.margins}),
+                                ...(options.landscape && {landscape: options.landscape}),
+                                ...(options.scaleFactor && {scaleFactor: options.scaleFactor}),
+                                ...(options.pagesPerSheet && {pagesPerSheet: options.pagesPerSheet}),
+                                ...(options.collate && {collate: options.collate}),
+                                ...(options.pageRanges && {pageRanges: options.pageRanges}),
+                                ...(options.duplexMode && {duplexMode: options.duplexMode}),
+                                ...(options.dpi && {dpi: options.dpi}),
                             }, (arg, err) => {
                                 // console.log(arg, err);
                                 if (err) {
@@ -116,7 +119,7 @@ export class PosPrinter {
                                     reject(err);
                                 }
                                 if (!printedState) {
-                                    resolve({complete: arg});
+                                    resolve({complete: arg, options});
                                     printedState = true;
                                 }
                                 mainWindow.close();
@@ -155,7 +158,7 @@ export class PosPrinter {
                  */
                 if ((line as any).css) {
                     window.close();
-                    reject(new Error('`options.css` in {css: ' + (line as any).css.toString() +'} is no longer supported. Please use `options.style` instead. Example: {style: {fontSize: 12}}'))
+                    reject(new Error('`options.css` in {css: ' + (line as any).css.toString() + '} is no longer supported. Please use `options.style` instead. Example: {style: {fontSize: 12}}'))
                     break;
                 }
                 /**
@@ -164,7 +167,7 @@ export class PosPrinter {
                  */
                 if (!!line.style && typeof line.style !== "object") {
                     window.close();
-                    reject(new Error('`options.styles` at "'+ line.style +'" should be an object. Example: {style: {fontSize: 12}}'))
+                    reject(new Error('`options.styles` at "' + line.style + '" should be an object. Example: {style: {fontSize: 12}}'))
                     break;
                 }
 
@@ -206,9 +209,30 @@ function sendIpcMsg(channel: any, webContents: any, arg: any) {
 }
 
 
-function parsePageSize(pageSize?: any): { width: number, height: number } {
-    let width = 220, height = 1200;
-    if(typeof pageSize == "object") {
+function parsePaperSize(pageSize?: PaperSize | SizeOptions): { width: number, height: number } {
+    let width = 219.212598, height = 1200;
+    if (typeof pageSize == 'string') {
+        switch (pageSize) {
+            case "44mm":
+                width = 166.299213;
+                break
+            case "57mm":
+                width = 215.433071;
+                break;
+            case "58mm":
+                width = 219.212598;
+                break;
+            case "76mm":
+                width = 287.244095;
+                break;
+            case "78mm":
+                width = 294.80315;
+                break;
+            case "80mm":
+                width = 302.362205;
+                break;
+        }
+    } else if (typeof pageSize == "object") {
         width = pageSize.width;
         height = pageSize.height;
     }

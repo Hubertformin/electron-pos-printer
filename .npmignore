@@ -13,3 +13,4 @@ CONTRIBUTING.md
 LICENSE
 yarn.lock
 .travis.yml
+*.playground.ts

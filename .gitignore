@@ -51,7 +51,8 @@ typings/
 
 # Output of 'npm pack'
 *.tgz
-
+*.playground.ts
+*.playground.json
 # Yarn Integrity file
 .yarn-integrity
 
@@ -64,5 +65,5 @@ typings/
 .next
 
 # test dir
-demo/
 .idea/
+
