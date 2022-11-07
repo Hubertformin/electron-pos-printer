@@ -1,9 +1,10 @@
 /*
  * Copyright (c) 2019-2022. Author Hubert Formin <hformin@gmail.com>
  */
-import {PaperSize, PosPrintData, PosPrintOptions, SizeOptions} from "./models";
-import {BrowserWindow, ipcMain} from 'electron';
+import {PosPrintData, PosPrintOptions} from "./models";
+import {BrowserWindow} from 'electron';
 import {join} from "path";
+import {convertPixelsToMicrons, parsePaperSize, parsePaperSizeInMicrons, sendIpcMsg} from "./utils";
 
 if ((process as any).type == 'renderer') {
     throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
@@ -21,9 +22,18 @@ export class PosPrinter {
      */
     public static print(data: PosPrintData[], options: PosPrintOptions): Promise<any> {
         return new Promise((resolve, reject) => {
-            // Reject if printer name is not set in live mode
+            /**
+             * Validation
+             */
+            // 1. Reject if printer name is not set in live mode
             if (!options.preview && !options.printerName && !options.silent) {
                 reject(new Error("A printer name is required, if you don't want to specify a printer name, set silent to true").toString());
+            }
+            // 2. Reject if pageSize is object and pageSize.height or pageSize.width is not set
+            if (typeof options.pageSize == 'object') {
+                if (!options.pageSize.height || !options.pageSize.width) {
+                    reject(new Error('height and width properties are required for options.pageSize'));
+                }
             }
             // else
             let printedState = false; // If the job has been printer or not
@@ -57,10 +67,9 @@ export class PosPrinter {
              * The width and height of this window can be customized by the user
              *
              */
-            const parsedPaperSize = parsePaperSize(options.pageSize);
 
             let mainWindow = new BrowserWindow({
-                ...parsedPaperSize,
+                ...parsePaperSize(options.pageSize),
                 show: !!options.preview,
                 webPreferences: {
                     nodeIntegration: true,        // For electron >= 4.0.0
@@ -92,8 +101,12 @@ export class PosPrinter {
                  */
                 return PosPrinter.renderPrintDocument(mainWindow, data)
                     .then(() => {
-                        // Get the height of content window
-                        const contentHeight = mainWindow.getContentSize()[1];
+
+                        let {width, height} = parsePaperSizeInMicrons(options.pageSize);
+                        // Get the height of content window, if the pageSize is a string
+                        if (typeof options.pageSize === 'string') {
+                            height = convertPixelsToMicrons(mainWindow.getContentSize()[1]);
+                        }
 
                         if (!options.preview) {
                             mainWindow.webContents.print({
@@ -101,7 +114,24 @@ export class PosPrinter {
                                 printBackground: !!options.printBackground,
                                 deviceName: options.printerName,
                                 copies: options?.copies || 1,
-                                pageSize: { width: parsedPaperSize.width, height: contentHeight },
+                                /**
+                                 * Fix of Issue #81
+                                 * Custom width & height properties have to be converted to microns for webContents.print else they would fail...
+                                 *
+                                 * The minimum micron size Chromium accepts is that where:
+                                 * Per printing/units.h:
+                                 *  * kMicronsPerInch - Length of an inch in 0.001mm unit.
+                                 *  * kPointsPerInch - Length of an inch in CSS's 1pt unit.
+                                 *
+                                 * Formula: (kPointsPerInch / kMicronsPerInch) * size >= 1
+                                 *
+                                 * Practically, this means microns need to be > 352 microns.
+                                 * We therefore need to verify this or it will silently fail.
+                                 *
+                                 * 1px = 264.5833 microns
+                                 */
+
+                                pageSize: {width, height},
                                 ...(options.header && {color: options.header}),
                                 ...(options.footer && {color: options.footer}),
                                 ...(options.color && {color: options.color}),
@@ -188,59 +218,5 @@ export class PosPrinter {
             // when the render process is done rendering the page, resolve
             resolve({message: 'page-rendered'});
         })
-    }
-}
-
-/**
- * @function sendMsg
- * @description Sends messages to the render process to render the data specified in the PostPrintDate interface and receives a status of true
- *
- */
-function sendIpcMsg(channel: any, webContents: any, arg: any) {
-    return new Promise((resolve, reject) => {
-        // @ts-ignore
-        ipcMain.once(`${channel}-reply`, function (event, result) {
-            if (result.status) {
-                resolve(result);
-            } else {
-                reject(result.error);
-            }
-        });
-        webContents.send(channel, arg);
-    });
-}
-
-
-function parsePaperSize(pageSize?: PaperSize | SizeOptions): { width: number, height: number } {
-    let width = 219.212598, height = 1200;
-    if (typeof pageSize == 'string') {
-        switch (pageSize) {
-            case "44mm":
-                width = 166;
-                break
-            case "57mm":
-                width = 215;
-                break;
-            case "58mm":
-                width = 219;
-                break;
-            case "76mm":
-                width = 287;
-                break;
-            case "78mm":
-                width = 295;
-                break;
-            case "80mm":
-                width = 302;
-                break;
-        }
-    } else if (typeof pageSize == "object") {
-        width = pageSize.width;
-        height = pageSize.height;
-    }
-
-    return {
-        width,
-        height
     }
 }
