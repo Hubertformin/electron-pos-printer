@@ -100,12 +100,13 @@ export class PosPrinter {
                  *
                  */
                 return PosPrinter.renderPrintDocument(mainWindow, data)
-                    .then(() => {
+                    .then(async () => {
 
                         let {width, height} = parsePaperSizeInMicrons(options.pageSize);
                         // Get the height of content window, if the pageSize is a string
                         if (typeof options.pageSize === 'string') {
-                            height = convertPixelsToMicrons(mainWindow.getContentSize()[1]);
+                            const clientHeight = await mainWindow.webContents.executeJavaScript('document.body.clientHeight')
+                            height = convertPixelsToMicrons(clientHeight);
                         }
 
                         if (!options.preview) {
