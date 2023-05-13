@@ -81,10 +81,19 @@ async function renderDataToHTML(event, arg) {
             return;
         case 'barCode':
             try {
+                const barcodeWrapperEl = document.createElement('div')
                 const barcodeEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 barcodeEl.setAttributeNS(null, 'id', `barCode-${arg.lineIndex}`);
-                body.appendChild(barcodeEl);
-                
+                barcodeWrapperEl.appendChild(barcodeEl)
+                body.appendChild(barcodeWrapperEl);
+
+                if(arg.line?.style){
+                    applyElementStyles(barcodeWrapperEl,arg.line.style)
+                }else{
+                    barcodeWrapperEl.style.display = 'flex';
+                    barcodeWrapperEl.style.justifyContent = arg.line?.position || 'left';
+                }
+
                 JsBarcode(`#barCode-${arg.lineIndex}`, arg.line.value, {
                     // format: "",
                     lineColor: "#000",
