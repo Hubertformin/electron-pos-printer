@@ -50,7 +50,7 @@
     "chai-as-promised": "^7.1.1",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.2.2",
-    "electron": "^20.1.1",
+    "electron": "^22.3.25",
     "html-webpack-plugin": "^5.5.0",
     "keyv": "^4.5.2",
     "mini-css-extract-plugin": "^2.6.1",
