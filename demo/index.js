@@ -18,7 +18,9 @@ const createWindow = () => {
 
     win.loadFile('index.html');
     // open deve tools
-    win.webContents.openDevTools();
+    if (process.env.NODE_ENV !== 'test') {
+        win.webContents.openDevTools();
+    }
 }
 
 app.whenReady().then(() => {
