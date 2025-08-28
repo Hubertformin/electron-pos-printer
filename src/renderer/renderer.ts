@@ -60,6 +60,13 @@ async function renderDataToHTML(event, arg) {
                 container.style.display = 'flex';
                 container.style.justifyContent = arg.line?.position || 'left';
 
+                if(arg.line?.style){
+                    applyElementStyles(container,arg.line.style)
+                }else{
+                    container.style.display = 'flex';
+                    container.style.justifyContent = arg.line?.position || 'left';
+                }
+
                 const qrCode = document.createElement('canvas');
                 qrCode.setAttribute('id', `qrCode${arg.lineIndex}`);
                 applyElementStyles(qrCode, { 'textAlign': arg.line.position ? '-webkit-' + arg.line.position : '-webkit-left'});
