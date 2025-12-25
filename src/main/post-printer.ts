@@ -4,7 +4,7 @@
 import { PosPrintData, PosPrintOptions } from "./models";
 import { BrowserWindow } from "electron";
 import { join } from "path";
-import { convertPixelsToMicrons, parsePaperSize, parsePaperSizeInMicrons, sendIpcMsg } from "./utils";
+import { convertPixelsToMicrons, DEFAULT_FONT_SIZE, parsePaperSize, parsePaperSizeInMicrons, sendIpcMsg } from "./utils";
 
 if ((process as any).type == "renderer") {
 	throw new Error('electron-pos-printer: use remote.require("electron-pos-printer") in the render process');
@@ -74,6 +74,7 @@ export class PosPrinter {
 				webPreferences: {
 					nodeIntegration: true, // For electron >= 4.0.0
 					contextIsolation: false,
+                    defaultFontSize: options.defaultFontSize || DEFAULT_FONT_SIZE
 				},
 			});
 

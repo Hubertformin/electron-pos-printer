@@ -1,6 +1,8 @@
 import {ipcMain} from "electron";
 import {PaperSize, SizeOptions} from "./models";
 
+export const DEFAULT_FONT_SIZE = 12;
+
 /**
  * @function sendMsg
  * @description Sends messages to the render process to render the data specified in the PostPrintDate interface and receives a status of true

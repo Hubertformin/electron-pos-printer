@@ -50,6 +50,7 @@ export interface PosPrintOptions {
 	pageSize?: PaperSize | SizeOptions;
 	dpi?: { horizontal: number; vertical: number };
 	pathTemplate?: string;
+    defaultFontSize?: number
 }
 
 export interface SizeOptions {

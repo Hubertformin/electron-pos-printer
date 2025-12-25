@@ -2,12 +2,16 @@
     margin: 0;
     page-break-before: always;
 }
-body {
-    font-size: 12px;
-    /*line-height: 24px;*/
+
+.barcode-container::after {
+    content: '';
+    display: table;
+    clear: both;
 }
-.barcode-container::after{content: '';display: table;clear: both;}
-.font {font-size: 12px; margin: 0 15px;}
+
+.font {
+    margin: 0 15px;
+}
 
 table {
     width: 100%;
