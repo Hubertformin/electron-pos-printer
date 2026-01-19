@@ -1,7 +1,7 @@
 
 ![License](https://img.shields.io/npm/l/electron-pos-printer)
 ![Version](https://img.shields.io/npm/v/electron-pos-printer?label=version)
-![Issues](https://img.shields.io/github/issues/Hubertformin/electron-pos-printer)
+![downloads](https://img.shields.io/npm/dm/electron-pos-printer)
 
 # Electron-pos-printer
 A customizable electron.js printing plugin specifically designed for thermal receipt printers.
