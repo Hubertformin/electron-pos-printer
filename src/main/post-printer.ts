@@ -4,6 +4,8 @@
 import { CashDrawerOptions, PosPrintData, PosPrintOptions } from "./models";
 import { BrowserWindow } from "electron";
 import { join } from "path";
+import { tmpdir } from "os";
+import { writeFileSync, unlinkSync } from "fs";
 import { spawn } from "child_process";
 import { convertPixelsToMicrons, parsePaperSize, parsePaperSizeInMicrons, sendIpcMsg } from "./utils";
 
@@ -207,18 +209,15 @@ export class PosPrinter {
 
 			if (platform === "win32") {
 				// Write the buffer to a temp file then use `copy /b` to send raw bytes to the printer
-				const os = require("os");
-				const fs = require("fs");
-				const path = require("path");
-				const tmpFile = path.join(os.tmpdir(), `pos_raw_${Date.now()}.bin`);
+				const tmpFile = join(tmpdir(), `pos_raw_${Date.now()}.bin`);
 				try {
-					fs.writeFileSync(tmpFile, data);
+					writeFileSync(tmpFile, data);
 				} catch (e) {
 					return reject(e);
 				}
 				const child = spawn("cmd.exe", ["/c", `copy /b "${tmpFile}" "${printerName}"`], { shell: false });
 				child.on("close", (code) => {
-					try { fs.unlinkSync(tmpFile); } catch (_) { /* ignore */ }
+					try { unlinkSync(tmpFile); } catch (_) { /* ignore */ }
 					if (code === 0) resolve();
 					else reject(new Error(`sendRawCommand failed with exit code ${code}`));
 				});
