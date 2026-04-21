@@ -62,7 +62,8 @@ export function renderImageToPage(arg): Promise<HTMLElement> {
 				return reject(`Invalid url: ${arg.url}`);
 			}
 			if (isImageBase64) {
-				uri = "data:image/png;base64," + arg.url;
+				// If it already starts with "data:", use it as-is; otherwise wrap as PNG base64
+				uri = arg.url.startsWith("data:") ? arg.url : "data:image/png;base64," + arg.url;
 			} else {
 				uri = arg.url;
 			}
@@ -102,20 +103,34 @@ export function renderImageToPage(arg): Promise<HTMLElement> {
 
 		img.src = uri;
 
-		// appending
-		img_con.prepend(img);
-		resolve(img_con);
+		// Wait for the image to fully decode into the compositor before resolving.
+		// Without this, silent-mode prints fire webContents.print() before the
+		// image is painted, producing blank receipts (#113).
+		img.decode()
+			.then(() => {
+				img_con.prepend(img);
+				resolve(img_con);
+			})
+			.catch(() => {
+				// decode() unavailable in very old Chromium; fall back gracefully
+				img_con.prepend(img);
+				resolve(img_con);
+			});
 	});
 }
 
 /**
  * @function
- * @name generateTableCell
+ * @name isBase64
  * @param str {string}
- * @description Checks if a string is a base64 string
+ * @description Checks if a string is a base64 string or a data: URL containing base64 data
  * */
-export function isBase64(str) {
-	return Buffer.from(str, "base64").toString("base64") === str;
+export function isBase64(str: string): boolean {
+	if (typeof str !== "string") return false;
+	// Accept full data URLs: data:<mime>;base64,<payload>
+	if (/^data:[^;]+;base64,/.test(str)) return true;
+	// Accept raw base64 payload (no whitespace, valid alphabet)
+	return /^[A-Za-z0-9+/]+=*$/.test(str) && Buffer.from(str, "base64").toString("base64") === str;
 }
 
 /**
