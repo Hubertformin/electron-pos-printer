@@ -15,8 +15,8 @@ export declare class PosPrinter {
 	 * @param data {Buffer} — raw bytes to send (e.g. ESC/POS command sequence)
 	 * @return {Promise<void>}
 	 * @description Sends raw bytes directly to a printer bypassing the HTML rendering pipeline.
+	 * On Windows uses PowerShell System.Printing (accepts display names, no port lookup needed).
 	 * On macOS/Linux uses `lp -d <printer> -o raw`.
-	 * On Windows writes to the raw printer port via `copy /b`.
 	 */
 	static sendRawCommand(printerName: string, data: Buffer): Promise<void>;
 	/**
@@ -55,9 +55,9 @@ export declare type PosPrintType = "text" | "barCode" | "qrCode" | "image" | "ta
 export interface CashDrawerOptions {
 	/** Pin number to trigger. Default: 2 */
 	pin?: 2 | 5;
-	/** Pulse on-time in milliseconds (0–255 mapped to 2ms units). Default: 25 */
+	/** Pulse on-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 25 */
 	onTime?: number;
-	/** Pulse off-time in milliseconds (0–255 mapped to 2ms units). Default: 250 */
+	/** Pulse off-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 250 */
 	offTime?: number;
 }
 /**

@@ -41,7 +41,10 @@ export class PosPrinter {
 			// else
 			let printedState = false; // If the job has been printer or not
 			let window_print_error: any = null; // The error returned if the printing fails
-			let timeOut = options.timeOutPerLine ? options.timeOutPerLine * data.length + 200 : 400 * data.length + 200;
+			const copies = options?.copies || 1;
+			// Scale timeout to account for render time *and* N sequential print round-trips.
+			const perLinems = options.timeOutPerLine ?? 400;
+			let timeOut = perLinems * data.length + copies * 2000 + 200;
 
 			/**
 			 * If in live mode i.e. `options.preview` is false & if `options.silent` is false
@@ -115,14 +118,17 @@ export class PosPrinter {
 						}
 
 						if (!options.preview) {
-							const copies = options?.copies || 1;
 							let completedCopies = 0;
 
 							/**
 							 * Chromium silently caps copies at 1 for many thermal printer drivers.
 							 * We loop the print call ourselves so copies always works (#25).
+							 *
+							 * Guard mainWindow before every use: the timeout handler may have already
+							 * closed it between copy callbacks (#4 — null dereference race).
 							 */
 							const printOneCopy = () => {
+								if (!mainWindow || mainWindow.isDestroyed()) return;
 								mainWindow.webContents.print(
 									{
 										silent: !!options.silent,
@@ -159,13 +165,15 @@ export class PosPrinter {
 										...(options.duplexMode && { duplexMode: options.duplexMode }),
 										...(options.dpi && { dpi: options.dpi }),
 									},
-									(success, err) => {
-										if (err) {
-											window_print_error = err;
+									(success, failureReason) => {
+										// Check success flag — not the reason string — to detect failure.
+										// An empty/undefined failureReason is not a reliable indicator.
+										if (!success) {
+											window_print_error = failureReason;
 											if (!printedState) {
 												printedState = true;
-												mainWindow.close();
-												reject(err);
+												if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+												reject(new Error(failureReason || "Print failed"));
 											}
 											return;
 										}
@@ -174,8 +182,8 @@ export class PosPrinter {
 											printOneCopy();
 										} else if (!printedState) {
 											printedState = true;
-											resolve({ complete: success, options });
-											mainWindow.close();
+											if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+											resolve({ complete: true, options });
 										}
 									}
 								);
@@ -196,8 +204,8 @@ export class PosPrinter {
 	 * @param data {Buffer} — raw bytes to send (e.g. ESC/POS command sequence)
 	 * @return {Promise<void>}
 	 * @description Sends raw bytes directly to a printer bypassing the HTML rendering pipeline.
+	 * On Windows uses PowerShell System.Printing (accepts display names, no port lookup needed).
 	 * On macOS/Linux uses `lp -d <printer> -o raw`.
-	 * On Windows writes to the raw printer port via `copy /b`.
 	 */
 	public static sendRawCommand(printerName: string, data: Buffer): Promise<void> {
 		return new Promise((resolve, reject) => {
@@ -208,25 +216,44 @@ export class PosPrinter {
 			const platform = process.platform;
 
 			if (platform === "win32") {
-				// Write the buffer to a temp file then use `copy /b` to send raw bytes to the printer
-				const tmpFile = join(tmpdir(), `pos_raw_${Date.now()}.bin`);
+				// Write the buffer to a temp file so PowerShell can read it without piping binary
+				const tmpFile = join(tmpdir(), `pos_raw_${Date.now()}.bin`).replace(/\\/g, "/");
 				try {
 					writeFileSync(tmpFile, data);
 				} catch (e) {
 					return reject(e);
 				}
-				const child = spawn("cmd.exe", ["/c", `copy /b "${tmpFile}" "${printerName}"`], { shell: false });
+
+				// Escape single-quotes for PowerShell string literals ('It''s' style)
+				const safeName = printerName.replace(/'/g, "''");
+				const safePath = tmpFile.replace(/'/g, "''");
+
+				// System.Printing.LocalPrintServer.GetPrintQueue() accepts the display name
+				// exactly as shown in "Devices and Printers" — no port lookup required.
+				const psCmd =
+					`Add-Type -AssemblyName System.Printing; ` +
+					`$srv = New-Object System.Printing.LocalPrintServer; ` +
+					`$q = $srv.GetPrintQueue('${safeName}'); ` +
+					`$j = $q.AddJob('pos_raw'); ` +
+					`$s = $j.JobStream; ` +
+					`$b = [System.IO.File]::ReadAllBytes('${safePath}'); ` +
+					`$s.Write($b, 0, $b.Length); ` +
+					`$s.Close()`;
+
+				const child = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", psCmd], { shell: false });
+				let stderr = "";
+				child.stderr?.on("data", (chunk: Buffer) => { stderr += chunk.toString(); });
 				child.on("close", (code) => {
 					try { unlinkSync(tmpFile); } catch (_) { /* ignore */ }
 					if (code === 0) resolve();
-					else reject(new Error(`sendRawCommand failed with exit code ${code}`));
+					else reject(new Error(`sendRawCommand failed on Windows (exit ${code}): ${stderr.trim()}`));
 				});
 				child.on("error", reject);
 			} else {
-				// macOS / Linux: lp -d <printer> -o raw -
+				// macOS / Linux: pass printerName as a separate argument (safe from injection)
 				const child = spawn("lp", ["-d", printerName, "-o", "raw", "-"], { stdio: ["pipe", "ignore", "pipe"] });
 				let stderr = "";
-				child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
+				child.stderr.on("data", (chunk: Buffer) => { stderr += chunk.toString(); });
 				child.on("close", (code) => {
 					if (code === 0) resolve();
 					else reject(new Error(`sendRawCommand failed (lp exit ${code}): ${stderr.trim()}`));

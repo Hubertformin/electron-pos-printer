@@ -123,14 +123,19 @@ export function renderImageToPage(arg): Promise<HTMLElement> {
  * @function
  * @name isBase64
  * @param str {string}
- * @description Checks if a string is a base64 string or a data: URL containing base64 data
+ * @description Checks if a string is a raw base64 payload or a data: URL with base64 content.
+ * Handles both padded ("aGVsbG8=") and unpadded ("aGVsbG8") base64.
  * */
 export function isBase64(str: string): boolean {
 	if (typeof str !== "string") return false;
 	// Accept full data URLs: data:<mime>;base64,<payload>
 	if (/^data:[^;]+;base64,/.test(str)) return true;
-	// Accept raw base64 payload (no whitespace, valid alphabet)
-	return /^[A-Za-z0-9+/]+=*$/.test(str) && Buffer.from(str, "base64").toString("base64") === str;
+	// Accept raw base64 — strip trailing padding before the round-trip check so
+	// unpadded strings (e.g. "aGVsbG8") don't fail due to Node re-adding "=".
+	if (!/^[A-Za-z0-9+/]+=*$/.test(str)) return false;
+	const stripped = str.replace(/=+$/, "");
+	const canonical = Buffer.from(stripped, "base64").toString("base64").replace(/=+$/, "");
+	return stripped === canonical;
 }
 
 /**

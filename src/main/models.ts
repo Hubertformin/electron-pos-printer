@@ -14,9 +14,9 @@ export interface SizeOptions {
 export interface CashDrawerOptions {
 	/** Pin number to trigger. Default: 2 */
 	pin?: 2 | 5;
-	/** Pulse on-time in milliseconds (0–255 mapped to 2ms units). Default: 25 */
+	/** Pulse on-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 25 */
 	onTime?: number;
-	/** Pulse off-time in milliseconds (0–255 mapped to 2ms units). Default: 250 */
+	/** Pulse off-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 250 */
 	offTime?: number;
 }
 
