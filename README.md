@@ -301,7 +301,7 @@ PosPrinter.sendRawCommand("XP-80C", Buffer.from([0x1d, 0x56, 0x00]))
 
 > **Platform notes**
 > - macOS / Linux: uses `lp -d <printer> -o raw`
-> - Windows: uses `copy /b <tmpfile> <printerName>` (the printer name must match exactly as shown in Windows Devices & Printers)
+> - Windows: uses PowerShell `System.Printing.LocalPrintServer.GetPrintQueue()` — pass the printer display name exactly as shown in **Devices and Printers** (e.g. `"XP-80C"`)
 
 ---
 
