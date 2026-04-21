@@ -10,6 +10,28 @@ export declare class PosPrinter {
 	 */
 	static print(data: PosPrintData[], options: PosPrintOptions): Promise<any>;
 	/**
+	 * @method sendRawCommand
+	 * @param printerName {string} — name of the printer as returned by webContents.getPrinters()
+	 * @param data {Buffer} — raw bytes to send (e.g. ESC/POS command sequence)
+	 * @return {Promise<void>}
+	 * @description Sends raw bytes directly to a printer bypassing the HTML rendering pipeline.
+	 * On Windows uses PowerShell System.Printing (accepts display names, no port lookup needed).
+	 * On macOS/Linux uses `lp -d <printer> -o raw`.
+	 */
+	static sendRawCommand(printerName: string, data: Buffer): Promise<void>;
+	/**
+	 * @method openCashDrawer
+	 * @param printerName {string} — name of the printer connected to the cash drawer
+	 * @param opts {CashDrawerOptions} — optional pin/timing overrides
+	 * @return {Promise<void>}
+	 * @description Sends the ESC/POS cash drawer kick command to the named printer.
+	 * The standard sequence is: ESC p <pin> <on-time> <off-time>
+	 *   - ESC p  = 0x1B 0x70
+	 *   - pin    = 0x00 (pin 2) or 0x01 (pin 5)
+	 *   - on/off = pulse duration in 2ms units (0–255)
+	 */
+	static openCashDrawer(printerName: string, opts?: CashDrawerOptions): Promise<void>;
+	/**
 	 * @Method
 	 * @Param data {any[]}
 	 * @Return {Promise}
@@ -30,6 +52,14 @@ export declare type PosPrintPosition = "left" | "center" | "right";
  * @name PosPrintType
  * **/
 export declare type PosPrintType = "text" | "barCode" | "qrCode" | "image" | "table";
+export interface CashDrawerOptions {
+	/** Pin number to trigger. Default: 2 */
+	pin?: 2 | 5;
+	/** Pulse on-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 25 */
+	onTime?: number;
+	/** Pulse off-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 250 */
+	offTime?: number;
+}
 /**
  * @interface
  * @name PosPrintData
@@ -38,7 +68,7 @@ export interface PosPrintData {
 	/**
 	 * @property type
 	 * @description type data to print: 'text' | 'barCode' | 'qrcode' | 'image' | 'table'
-	*/
+	 */
 	type: PosPrintType;
 	value?: string;
 	style?: PrintDataStyle;
@@ -62,8 +92,8 @@ export interface PosPrintOptions {
 	 * {@link https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback}
 	 * @field copies: number of copies to print
 	 * @field preview: bool，false=print，true=pop preview window
-	 * @field deviceName: string，default device name, check it at webContent.getPrinters()
-	 * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
+	 * @field printerName: string，default device name, check it at webContent.getPrinters()
+	 * @field timeOutPerLine: int，timeout，actual time is ：data.length * timeOutPerLine ms
 	 * @field silent: To print silently
 	 * @field pathTemplate: Path to HTML file for custom print options
 	 */
@@ -77,8 +107,7 @@ export interface PosPrintOptions {
 	timeOutPerLine?: number;
 	silent?: boolean;
 	color?: boolean;
-	printBackground?: any;
-	boolean: any;
+	printBackground?: boolean;
 	margins?: {
 		marginType?: "default" | "none" | "printableArea" | "custom";
 		top?: number;
@@ -496,10 +525,6 @@ export interface PrintDataStyle {
 	wordSpacing?: string;
 	writingMode?: string;
 	zIndex?: string;
-}
-export interface SizeOptions {
-	height: number;
-	width: number;
 }
 export interface SizeOptions {
 	height: number;

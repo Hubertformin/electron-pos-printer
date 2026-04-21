@@ -264,6 +264,84 @@ PosPrinter.print(data, options)
 | tableBodyStyle   | `string`                                 | Set a custom style to the table body                                                      |
 | tableFooterStyle | `string`                                 | Set a custom style to the table footer                                                    |
 
+## Cash Drawer
+
+Use `PosPrinter.openCashDrawer(printerName)` to send an ESC/POS cash-drawer kick command to the printer that the drawer is connected to.
+
+```js
+const { PosPrinter } = require("electron-pos-printer");
+
+// Open drawer on pin 2 (default)
+PosPrinter.openCashDrawer("XP-80C")
+  .then(() => console.log("Cash drawer opened"))
+  .catch(console.error);
+
+// Open drawer on pin 5 with custom pulse timing
+PosPrinter.openCashDrawer("XP-80C", { pin: 5, onTime: 50, offTime: 300 })
+  .then(() => console.log("Cash drawer opened"))
+  .catch(console.error);
+```
+
+### Cash drawer options
+
+| Option    | Type        | Default | Description                                             |
+|-----------|:-----------:|--------:|:--------------------------------------------------------|
+| `pin`     | `2` or `5`  | `2`     | Drawer kick pin                                         |
+| `onTime`  | `number`    | `25`    | Pulse on-time in milliseconds                           |
+| `offTime` | `number`    | `250`   | Pulse off-time in milliseconds                          |
+
+You can also send arbitrary ESC/POS raw bytes with `PosPrinter.sendRawCommand(printerName, buffer)`:
+
+```js
+// Send a manual paper cut command (ESC/POS full cut: GS V 0)
+PosPrinter.sendRawCommand("XP-80C", Buffer.from([0x1d, 0x56, 0x00]))
+  .then(() => console.log("Paper cut sent"))
+  .catch(console.error);
+```
+
+> **Platform notes**
+> - macOS / Linux: uses `lp -d <printer> -o raw`
+> - Windows: uses PowerShell `System.Printing.LocalPrintServer.GetPrintQueue()` — pass the printer display name exactly as shown in **Devices and Printers** (e.g. `"XP-80C"`)
+
+---
+
+## FAQ
+
+### `Cannot find module 'electron-pos-printer'` or `dist/index.js has no valid main entry`
+
+This happens when installing directly from a git URL instead of npm, because the compiled `dist/` is not committed to the repo. As of v1.4.0 a `prepare` script runs `npm run build` automatically on `npm install`, so this should resolve itself. If you still hit it:
+
+```bash
+cd node_modules/electron-pos-printer && npm run build
+```
+
+### Webpack / vue-cli bundler errors
+
+When bundling your Electron app with webpack or vue-cli, mark `electron-pos-printer` as an external so it is not bundled (it must run in the Electron main process and uses native Node APIs):
+
+```js
+// webpack.config.js
+module.exports = {
+  externals: {
+    'electron-pos-printer': 'commonjs electron-pos-printer',
+  },
+};
+```
+
+For vue-cli, add to `vue.config.js`:
+
+```js
+module.exports = {
+  pluginOptions: {
+    electronBuilder: {
+      externals: ['electron-pos-printer'],
+    },
+  },
+};
+```
+
+---
+
 ## Contributors
 Thanks to our [contributors](https://github.com/Hubertformin/electron-pos-printer/graphs/contributors) 🎉👏
 - [Hubert Formin](https://github.com/Hubertformin)

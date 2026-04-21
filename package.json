@@ -1,6 +1,6 @@
 {
 	"name": "electron-pos-printer",
-	"version": "1.3.8",
+	"version": "1.4.0",
 	"description": "Electron printer plugin for 80mm, 78mm, 76mm, 58mm, 57mm, 44mm printers",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -9,8 +9,12 @@
 		"start": "npm run build && npm run demo",
 		"demo": "electron ./demo/",
 		"clean": "shx rm -rf dist",
-		"build": "npm run clean && webpack"
+		"build": "npm run clean && webpack",
+		"prepare": "npm run build"
 	},
+	"files": [
+		"dist"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Hubertformin/electron-pos-printer.git"

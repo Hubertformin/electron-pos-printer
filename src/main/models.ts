@@ -11,14 +11,23 @@ export interface SizeOptions {
 	width: number;
 }
 
+export interface CashDrawerOptions {
+	/** Pin number to trigger. Default: 2 */
+	pin?: 2 | 5;
+	/** Pulse on-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 25 */
+	onTime?: number;
+	/** Pulse off-time in milliseconds. Valid range: 0–510 ms (divided by 2 internally to fit the ESC/POS byte). Default: 250 */
+	offTime?: number;
+}
+
 export interface PosPrintOptions {
 	/**
 	 * @description Print options
 	 * {@link https://www.electronjs.org/docs/latest/api/web-contents#contentsprintoptions-callback}
 	 * @field copies: number of copies to print
 	 * @field preview: bool，false=print，true=pop preview window
-	 * @field deviceName: string，default device name, check it at webContent.getPrinters()
-	 * @field timeoutPerLine: int，timeout，actual time is ：data.length * timeoutPerLine ms
+	 * @field printerName: string，default device name, check it at webContent.getPrinters()
+	 * @field timeOutPerLine: int，timeout，actual time is ：data.length * timeOutPerLine ms
 	 * @field silent: To print silently
 	 * @field pathTemplate: Path to HTML file for custom print options
 	 */
@@ -52,10 +61,6 @@ export interface PosPrintOptions {
 	pathTemplate?: string;
 }
 
-export interface SizeOptions {
-	height: number;
-	width: number;
-}
 /**
  * @type PosPrintPosition
  * @description Alignment for type barCode and qrCode
