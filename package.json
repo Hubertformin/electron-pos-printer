@@ -9,8 +9,12 @@
 		"start": "npm run build && npm run demo",
 		"demo": "electron ./demo/",
 		"clean": "shx rm -rf dist",
-		"build": "npm run clean && webpack"
+		"build": "npm run clean && webpack",
+		"prepare": "npm run build"
 	},
+	"files": [
+		"dist"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Hubertformin/electron-pos-printer.git"
